@@ -8,7 +8,7 @@ container.appendChild(loading);
 let allJobs = [];         // Jobs cargados del JSON
 let filteredJobs = [];    // Jobs tras aplicar filtros
 let currentPage = 1;
-const itemsPerPage = 5;
+let itemsPerPage = 5;
 
 // --- BOTÓN "APLICAR" ---
 jobsListingSection.addEventListener('click', function (event) {
@@ -35,9 +35,8 @@ fetch('./assets/data/jobsData.json')
             return;
         }
 
-        // Guardamos todos los jobs
         allJobs = jobs;
-        filteredJobs = [...allJobs]; // por defecto todos
+        filteredJobs = [...allJobs];
 
         renderJobs();
         renderPagination();
@@ -50,23 +49,29 @@ fetch('./assets/data/jobsData.json')
 
 // --- RENDER DE JOBS SEGÚN PÁGINA ---
 function renderJobs() {
-    container.innerHTML = "";
+    container.innerHTML = ""; //Se limpia el contenedor para re-renderizar los jobs
 
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
 
     const jobsToShow = filteredJobs.slice(start, end);
+    if (jobsToShow.length === 0) {
+        // Mostrar mensaje si no hay trabajos
+        const message = document.createElement('p');
+        message.textContent = 'No existen trabajos disponibles con esa combinación de filtros';
+        message.className = 'no-items-message';
+        container.appendChild(message);
+    } else {
+        jobsToShow.forEach((job) => {
+            const article = document.createElement('article');
+            article.className = 'job-listing-card';
 
-    jobsToShow.forEach((job) => {
-        const article = document.createElement('article');
-        article.className = 'job-listing-card';
+            // dataset para filtros
+            article.dataset.location = job.data?.location || '';
+            article.dataset.nivel = job.data?.nivel || '';
+            article.dataset.technology = job.data?.technology?.join(', ') || '';
 
-        // dataset para filtros
-        article.dataset.location = job.data?.location || '';
-        article.dataset.nivel = job.data?.nivel || '';
-        article.dataset.technology = job.data?.technology?.join(', ') || '';
-
-        article.innerHTML = `
+            article.innerHTML = `
             <div>
                 <h3>${job.title}</h3>
                 <small>${job.company} | ${job.location}</small>
@@ -75,8 +80,9 @@ function renderJobs() {
             <button class="button-apply-job">Aplicar</button>
         `;
 
-        container.appendChild(article);
-    });
+            container.appendChild(article);
+        });
+    }
 }
 
 
@@ -92,7 +98,12 @@ function renderPagination() {
     // Prev
     const prev = document.createElement('a');
     prev.href = "#";
-    prev.textContent = "<";
+    prev.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M15 6l-6 6l6 6"/>
+        </svg>`;
 
     if (currentPage > 1) {
         prev.addEventListener('click', () => {
@@ -128,7 +139,12 @@ function renderPagination() {
     // Next
     const next = document.createElement('a');
     next.href = "#";
-    next.textContent = ">";
+    next.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M9 6l6 6l-6 6"/>
+        </svg>`;
 
     if (currentPage < totalPages) {
         next.addEventListener('click', () => {
@@ -180,3 +196,13 @@ function applyFilters() {
 filterLocation.addEventListener('change', applyFilters);
 filterTechnology.addEventListener('change', applyFilters);
 filterNivel.addEventListener('change', applyFilters);
+
+// --- PAGINACION ---
+const filterResultsPerPage = document.querySelector('#results-per-page');
+
+filterResultsPerPage.addEventListener('change', () => {
+    itemsPerPage = parseInt(filterResultsPerPage.value, 10);
+    currentPage = 1;
+    renderJobs();
+    renderPagination();
+});

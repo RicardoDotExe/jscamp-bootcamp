@@ -112,26 +112,21 @@
             <section class="jobs-result">
                 <h2>Resultados de búsqueda</h2>
                 <div class="jobs-listings">
-
+                    <!-- Las ofertas de empleo se cargarán aquí dinámicamente a través de JavaScript -->
                 </div>
-
+                <div class="resultsPerPage">
+                    <p>Resultados por página:</p>
+                    <select id="results-per-page" name="results-per-page">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
                 <nav class="pagination">
-                    <a href="#" class="prev" aria-label="Página anterior"
-                        title="Anterior"><svg width="16" height="16"
-                            viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M15 6l-6 6l6 6" /> </svg></a>
-                    <span class="pages"></span>
-                    <a href="#" class="next" aria-label="Página siguiente"
-                        title="Siguiente"><svg width="16" height="16"
-                            viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M15 6l-6 6l6 6" /></svg></a>
+                    <!-- Los controles de paginación se generarán aquí dinámicamente -->
                 </nav>
+
             </section>
         </main>
 
