@@ -4,6 +4,8 @@ const jobsListingSection = document.querySelector('.jobs-listings')
 loading.textContent = 'Cargando empleos...'
 container.appendChild(loading)
 
+//Contiene toda la logica de js de la pagina de empleos.
+
 //apply button 
 jobsListingSection.addEventListener('click', function (event) {
     const element = event.target
@@ -56,16 +58,39 @@ fetch('./assets/data/jobsData.json')
         console.error('Error:', error)
     })
 
-//Filtrado de empleos
-const filter = document.querySelector('#filter-location')
-const mensaje = document.querySelector('#filter-selected-value')
-filter.addEventListener('change', function () {
-    const jobs = document.querySelectorAll('.job-listing-card')
-    const selectedValue = filter.value
+const filterLocation = document.querySelector('#filter-location')
+const filterTechnology = document.querySelector('#filter-technology')
+const filterNivel = document.querySelector('#filter-experience-level')
 
-    jobs.forEach((job) => {
-        const localidad = job.getAttribute('data-location')
-        const isShown = selectedValue === '' || selectedValue === localidad
-        job.classList.toggle('is-hidden', isShown === false)
+function applyFilters() {
+    const jobs = document.querySelectorAll('.job-listing-card')
+
+    const selectedLocation = filterLocation.value
+    const selectedTech = filterTechnology.value
+    const selectedLevel = filterNivel.value
+
+    jobs.forEach(job => {
+        const jobLocation = job.dataset.location
+        const jobTech = job.dataset.technology
+        const jobLevel = job.dataset.nivel
+
+        // Condiciones individuales
+        const matchesLocation =
+            selectedLocation === '' || selectedLocation === jobLocation
+
+        const matchesTech =
+            selectedTech === '' || jobTech.includes(selectedTech)
+
+        const matchesLevel =
+            selectedLevel === '' || selectedLevel === jobLevel
+
+        const isShown = matchesLocation && matchesTech && matchesLevel
+
+        job.classList.toggle('is-hidden', !isShown)
     })
-})
+}
+
+// Ejecutar filtros cuando cualquiera cambie
+filterLocation.addEventListener('change', applyFilters)
+filterTechnology.addEventListener('change', applyFilters)
+filterNivel.addEventListener('change', applyFilters)
