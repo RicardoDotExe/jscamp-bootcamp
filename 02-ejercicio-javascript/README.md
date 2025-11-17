@@ -1,145 +1,39 @@
-# Ejercicio de JavaScript
+# Ejercicio HTML y CSS
 
 - [Diseño](https://stitch.withgoogle.com/projects/7508115667617706440)
+- [Ejercicio explicado](https://jscamp.dev/html-y-css/ejercicios-cursos)
 
-¡Hola! Si llegaste hasta aquí es que pudiste hacer el ejercicio de HTML y CSS correctamente, ¡enhorabuena!
-
-Para el desafío de hoy, vamos a tener diferentes retos, cada uno de ellos más complejo que el anterior, así que no te apresures y trata de ir a tu ritmo, repasando y practicando cada contenido que hemos dado.
-
----
-
-## Primer desafío | Mostrar los resultados de búsqueda ⭐️
-
-En el archivo `data.json` tienen la lista de todos los resultados de búsqueda.
-Muestra la lista dentro del elemento `ul` en `empleos.html`
-
-```html
-<ul class="jobs-listings">
-  <!-- Aquí se insertan los empleos dinámicamente -->
-</ul>
-```
+Replica la página de "Resultados de Búsqueda" en el archivo `empleos.html`.
 
 Ten en cuenta:
 
-- Debes usar `fetch`, tal como lo dimos en la lección [Renderizando datos con fetch](https://www.jscamp.dev/javascript/fetch-mostrar-datos)
-- El script debe ir en el archivo `fetch-data.js`
-
-Para simplificar el ejercicio, aquí te dejamos el código de cada elemento de la lista:
-
-```html
-<li>
-  <article class="job-listing-card">
-    <div>
-      <h3>{job.titulo}</h3>
-      <small>{job.empresa} | {job.ubicacion}</small>
-      <p>{job.descripcion}</p>
-    </div>
-    <button class="button-apply-job">Aplicar</button>
-  </article>
-</li>
-```
+- Debes crear la navegación entre el archivo `index.html` a `empleos.html`
+- Investiga e implementa el HTML adecuado para los inputs y la sección de resultados de búsqueda.
+- Trabaja en el modo responsive con lo que hemos aprendido en el curso
+- NO añadas nada de JavaScript en este ejercicio
 
 ---
 
-## Segundo desafío | Dar funcionalidad al botón de "Aplicar" ⭐️⭐️
+## Corrección del Ejercicio
 
-Al darle click al botón "Aplicar", debe pasar lo siguiente:
+Hola! Como estas? Enhorabuena por cómo hiciste el ejercicio!
+Cumpliste con todos los puntos de una manera super buena y organizada
 
-- Debe cambiar el texto del botón a "¡Aplicado!"
-- Debe cambiar el color del botón a verde
-- Debe deshabilitar el botón
+Dimos un poco de feedback de mejora en el html, dejando cambios en el código y comentarios. Si puedes, revísalos para que puedas entender mejor lo que hicimos :)
 
-Ten en cuenta:
+Dejamos un archivo `dudas.md` por si hay algo que nos quieras escribir.
+Por último, hubieron algunas cosas a ajustar en el responsive, siempre recuerda (dependiendo de la aplicación, pero en este caso si es así), hacer el diseño primero en mobile y luego para desktop
 
-- El script debe ir en el archivo `apply-button.js`
+### Tips:
 
----
+Puedes ver aquí un botón dentro del inspector de código que te permite ver como se ve el documento desde el punto de vista de un lector de pantalla.
 
-## Tercer desafío | Filtrar resultados por ubicación y nivel de experiencia ⭐️⭐️⭐️
+<img width="1062" height="1258" alt="CleanShot 2025-10-23 at 18 21 17@2x" src="https://github.com/user-attachments/assets/2b23123f-2526-4d84-a15d-bdc61acfeb1f" />
 
-En el archivo `empleos.html` tienen los filtros para buscar por ubicación y nivel de experiencia.
+## Cómo entregar el ejercicio para que lo demos como `completado`
 
-```html
-<select name="location" id="filter-location">
-  <option value="">Ubicación</option>
-  <option value="remoto">Remoto</option>
-  <option value="cdmx">Ciudad de México</option>
-  <option value="guadalajara">Guadalajara</option>
-  <option value="monterrey">Monterrey</option>
-  <option value="barcelona">Barcelona</option>
-</select>
+En la parte superior de tu repo te saldrá un cartel así:
 
-<select name="experience-level" id="filter-experience-level">
-  <option value="">Nivel de experiencia</option>
-  <option value="junior">Junior</option>
-  <option value="mid">Mid-level</option>
-  <option value="senior">Senior</option>
-  <option value="lead">Lead</option>
-</select>
-```
+<img width="1862" height="168" alt="CleanShot 2025-10-23 at 18 48 48@2x" src="https://github.com/user-attachments/assets/e1fac7a0-c04a-44a6-9059-0fc447b74c14" />
 
-El desafío es que cuando el usuario elige una ubicación o nivel de experiencia, solo se muestren las ofertas que coincidan con el filtro seleccionado.
-
-Ten en cuenta:
-
-- El script debe ir en el archivo `filters.js`
-- Si el usuario elige "remoto", solo se mostrarán las ofertas que sean remotas
-- Si el usuario elige "cdmx", solo se mostrarán las ofertas que sean para la Ciudad de México
-- Si el usuario elige "junior", solo se mostrarán las ofertas que sean para Junior
-- Si el usuario elige los campos por defecto (""), se mostrarán todas las ofertas
-
----
-
-## Cuarto desafío | Buscar por título ⭐️⭐️⭐️
-
-En el archivo `empleos.html` tienen el input de búsqueda:
-
-```html
-<input
-  name="search"
-  id="empleos-search-input"
-  type="text"
-  placeholder="Buscar trabajos, empresas o habilidades"
-/>
-```
-
-Tienen que filtrar los resultados de búsqueda por título.
-
-Ten en cuenta:
-
-- El script debe ir en el archivo `filters.js`
-- No tiene que ser sensible a las mayúsculas y minúsculas, el usuario puede escribir el título en mayúsculas o minúsculas y obtener el mismo resultado.
-- Si escribo “analista”, solo debería mostrar ofertas que incluyan esa palabra en el título
-- Si escribo “desarrollador”, solo las que tengan esa palabra
-- Si borro el texto, deberían aparecer todas las ofertas de nuevo
-
----
-
-## Quinto desafío | Filtrar por tecnología ⭐️⭐️⭐️⭐️
-
-En el archivo `empleos.html` tienen los filtros para buscar por tecnología.
-
-```html
-<select name="technology" id="filter-technology">
-  <option value="">Tecnología</option>
-  <optgroup label="Tecnologías populares">
-    <option value="javascript">JavaScript</option>
-    <option value="python">Python</option>
-    <option value="react">React</option>
-    <option value="nodejs">Node.js</option>
-  </optgroup>
-  <option value="java">Java</option>
-  <hr />
-  <option value="csharp">C#</option>
-  <option value="c">C</option>
-  <option value="c++">C++</option>
-  <hr />
-  <option value="ruby">Ruby</option>
-  <option value="php">PHP</option>
-</select>
-```
-
-Ten en cuenta:
-
-- El script debe ir en el archivo `filters.js`
-- En `data.json`, las tecnologías se muestran como un array de strings, por ejemplo: `"technology": ["javascript", "react"]`. Lo que tienes que hacer es que cuando el usuario elige una tecnología, solo se muestren las ofertas que contengan esa tecnología.
+Una vez leas los cambios y los entiendas, puedes darle a `Compare & Pull Request`, ir a la [clase de JSCamp](https://www.jscamp.dev/html-y-css/entregar-ejercicios), pedir review y enseguida daremos la clase por `completado` si no hay dudas :)
