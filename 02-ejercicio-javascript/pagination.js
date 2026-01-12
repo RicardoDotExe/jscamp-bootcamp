@@ -1,20 +1,29 @@
-// --- PAGINACIÓN ---
-const pagination = document.querySelector('.pagination');
+const paginationContainer = document.querySelector('.pagination');
+const resultsPerPageSelect = document.querySelector('#results-per-page');
+
 let currentPage = 1;
-let itemsPerPage = 5; // Puedes cambiar dinámicamente desde filters.js o un select
+let itemsPerPage = 5;
 
-function renderPagination() {
-    if (!pagination) return;
+export function renderPagination() {
+    if (!paginationContainer) return;
 
-    // Todos los jobs visibles
-    const jobs = Array.from(document.querySelectorAll('.job-listing-card'))
+    // Obtenemos los que NO están ocultos por el filtro de búsqueda.
+    // Con esto calculamos cuánta paginación habrá.
+    const visibleJobs = Array.from(document.querySelectorAll('.job-listing-card'))
         .filter(job => !job.classList.contains('is-hidden'));
 
-    const totalPages = Math.ceil(jobs.length / itemsPerPage);
+    const totalPages = Math.ceil(visibleJobs.length / itemsPerPage);
 
-    pagination.innerHTML = "";
+    if (currentPage > totalPages) currentPage = 1;
 
-    // --- Botón Prev ---
+    paginationContainer.innerHTML = "";
+
+    if (totalPages <= 1) {
+        showJobsPage(visibleJobs);
+        return;
+    }
+
+    // --- Botones ---
     const prev = document.createElement('a');
     prev.href = "#";
     prev.textContent = "«";
@@ -22,34 +31,27 @@ function renderPagination() {
         prev.addEventListener('click', (e) => {
             e.preventDefault();
             currentPage--;
-            showJobsPage(jobs);
             renderPagination();
         });
     } else {
         prev.style.opacity = "0.35";
         prev.style.pointerEvents = "none";
     }
-    pagination.appendChild(prev);
+    paginationContainer.appendChild(prev);
 
-    // --- Botones de página ---
     for (let i = 1; i <= totalPages; i++) {
         const btn = document.createElement('a');
         btn.href = "#";
         btn.textContent = i;
-
         if (i === currentPage) btn.classList.add('is-active');
-
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             currentPage = i;
-            showJobsPage(jobs);
             renderPagination();
         });
-
-        pagination.appendChild(btn);
+        paginationContainer.appendChild(btn);
     }
 
-    // --- Botón Next ---
     const next = document.createElement('a');
     next.href = "#";
     next.textContent = "»";
@@ -57,29 +59,37 @@ function renderPagination() {
         next.addEventListener('click', (e) => {
             e.preventDefault();
             currentPage++;
-            showJobsPage(jobs);
             renderPagination();
         });
     } else {
         next.style.opacity = "0.35";
         next.style.pointerEvents = "none";
     }
-    pagination.appendChild(next);
+    paginationContainer.appendChild(next);
 
-    // Mostrar la página actual al renderizar
-    showJobsPage(jobs);
+    showJobsPage(visibleJobs);
 }
 
-// --- Mostrar solo los jobs de la página actual ---
-function showJobsPage(jobs) {
-    jobs.forEach((job, index) => {
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
+function showJobsPage(visibleJobs) {
+    // Primero ocultamos todas las cards de la vista
+    const allCards = document.querySelectorAll('.job-listing-card');
+    allCards.forEach(card => card.style.display = 'none');
 
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+
+    // Mostramos solo las que tocan en esta página
+    visibleJobs.forEach((job, index) => {
         if (index >= start && index < end) {
-            job.classList.remove('is-hidden-page');
-        } else {
-            job.classList.add('is-hidden-page');
+            job.style.display = 'flex'; 
         }
+    });
+}
+
+if (resultsPerPageSelect) {
+    resultsPerPageSelect.addEventListener('change', (e) => {
+        itemsPerPage = parseInt(e.target.value, 10);
+        currentPage = 1;
+        renderPagination();
     });
 }

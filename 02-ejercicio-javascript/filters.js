@@ -1,33 +1,38 @@
-// --- FILTROS ---
+import { renderPagination } from './pagination.js';
+
 const filterLocation = document.querySelector('#filter-location');
 const filterTechnology = document.querySelector('#filter-technology');
 const filterNivel = document.querySelector('#filter-experience-level');
-const jobsListingSection = document.querySelector('.jobs-listings');
 
-function applyFilters() {
-    const selectedLocation = filterLocation.value;
-    const selectedTech = filterTechnology.value;
-    const selectedLevel = filterNivel.value;
+export function applyFilters() {
+    const selectedLocation = filterLocation.value.toLowerCase().trim();
+    const selectedTech = filterTechnology.value.toLowerCase().trim();
+    const selectedLevel = filterNivel.value.toLowerCase().trim();
 
-    // Seleccionamos todos los jobs ya renderizados
-    const jobs = jobsListingSection.querySelectorAll('.job-listing-card');
+    const jobs = document.querySelectorAll('.job-listing-card');
 
     jobs.forEach(job => {
-        const jobLocation = job.dataset.location || "";
-        const jobTech = job.dataset.technology || "";
-        const jobLevel = job.dataset.nivel || "";
+        const jobLocation = (job.dataset.location || "").toLowerCase();
+        const jobTech = (job.dataset.technology || "").toLowerCase();
+        const jobLevel = (job.dataset.nivel || "").toLowerCase();
 
-        const matchesLocation = selectedLocation === "" || selectedLocation === jobLocation;
+        const matchesLocation = selectedLocation === "" || jobLocation === selectedLocation;
         const matchesTech = selectedTech === "" || jobTech.includes(selectedTech);
-        const matchesLevel = selectedLevel === "" || selectedLevel === jobLevel;
+        const matchesLevel = selectedLevel === "" || jobLevel === selectedLevel;
 
-        const isShown = matchesLocation && matchesTech && matchesLevel;
-
-        // Añade o quita la clase is-hidden según corresponda
-        job.classList.toggle('is-hidden', !isShown);
+        if (matchesLocation && matchesTech && matchesLevel) {
+            job.classList.remove('is-hidden');
+        } else {
+            job.classList.add('is-hidden');
+        }
     });
+
+    //Se re-renderiza la paginación 
+    renderPagination();
 }
 
 filterLocation.addEventListener('change', applyFilters);
 filterTechnology.addEventListener('change', applyFilters);
 filterNivel.addEventListener('change', applyFilters);
+
+window.addEventListener('jobsLoaded', applyFilters);

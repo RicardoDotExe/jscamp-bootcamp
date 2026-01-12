@@ -499,7 +499,7 @@ select {
     gap: 1rem;
 
     &.is-hidden {
-      display: none;
+      display: none !important;
     }
 
     small {

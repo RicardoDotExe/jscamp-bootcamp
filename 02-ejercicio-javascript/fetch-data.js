@@ -1,13 +1,11 @@
+import { renderPagination } from './pagination.js';
 // --- VARIABLES GLOBALES ---
 const jobsListingSection = document.querySelector('.jobs-listings');
 const loading = document.createElement('p');
 loading.textContent = 'Cargando empleos...';
 jobsListingSection.appendChild(loading);
 
-let allJobs = [];         // Jobs cargados del JSON
-let filteredJobs = [];    // Jobs tras aplicar filtros
-let currentPage = 1;
-let itemsPerPage = 5;
+export let allJobs = [];
 
 // --- FETCH JOBS ---
 fetch('./assets/data/jobsData.json')
@@ -17,48 +15,34 @@ fetch('./assets/data/jobsData.json')
     })
     .then((jobs) => {
         loading.remove();
-
         if (!Array.isArray(jobs) || jobs.length === 0) {
-            jobsListingSection.innerHTML = '<p>No hay empleos disponibles por ahora.</p>';
+            jobsListingSection.innerHTML = '<p>No hay empleos disponibles.</p>';
             return;
         }
-
         allJobs = jobs;
-        filteredJobs = [...allJobs];
-
-        renderJobs();
+        renderJobs(); // Pintamos TODO el DOM una sola vez
+        renderPagination();
+        
+        // Disparamos un evento personalizado para que filters.js sepa que ya puede actuar
+        window.dispatchEvent(new Event('jobsLoaded'));
     })
     .catch((error) => {
         jobsListingSection.innerHTML = '<p>No se pudieron cargar los empleos.</p>';
         console.error('Error:', error);
     });
 
+export function renderJobs() {
+    jobsListingSection.innerHTML = ""; 
 
-// --- RENDER DE JOBS SEGÚN PÁGINA ---
-function renderJobs() {
-    jobsListingSection.innerHTML = ""; //Se limpia el contenedor para re-renderizar los jobs
+    allJobs.forEach((job) => {
+        const article = document.createElement('article');
+        article.className = 'job-listing-card';
 
-    const start = (currentPage - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
+        article.dataset.location = job.data?.location || '';
+        article.dataset.nivel = job.data?.nivel || '';
+        article.dataset.technology = job.data?.technology?.join(', ') || '';
 
-    const jobsToShow = filteredJobs.slice(start, end);
-    if (jobsToShow.length === 0) {
-        // Mostrar mensaje si no hay trabajos
-        const message = document.createElement('p');
-        message.textContent = 'No existen trabajos disponibles con esa combinación de filtros';
-        message.className = 'no-items-message';
-        jobsListingSection.appendChild(message);
-    } else {
-        jobsToShow.forEach((job) => {
-            const article = document.createElement('article');
-            article.className = 'job-listing-card';
-
-            // dataset para filtros
-            article.dataset.location = job.data?.location || '';
-            article.dataset.nivel = job.data?.nivel || '';
-            article.dataset.technology = job.data?.technology?.join(', ') || '';
-
-            article.innerHTML = `
+        article.innerHTML = `
             <div>
                 <h3>${job.title}</h3>
                 <small>${job.company} | ${job.location}</small>
@@ -66,8 +50,6 @@ function renderJobs() {
             </div>
             <button class="button-apply-job">Aplicar</button>
         `;
-
-            jobsListingSection.appendChild(article);
-        });
-    }
+        jobsListingSection.appendChild(article);
+    });
 }

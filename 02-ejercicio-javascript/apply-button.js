@@ -1,5 +1,4 @@
 const jobsListingSection = document.querySelector('.jobs-listings');
-console.log(jobsListingSection);
 
 // --- BOTÓN "APLICAR" ---
 jobsListingSection.addEventListener('click', function (event) {
