@@ -1,8 +1,7 @@
-const container = document.querySelector('.jobs-listings');
 const loading = document.createElement('p');
 const jobsListingSection = document.querySelector('.jobs-listings');
 loading.textContent = 'Cargando empleos...';
-container.appendChild(loading);
+jobsListingSection.appendChild(loading);
 
 // Variables de paginación
 let allJobs = [];         // Jobs cargados del JSON
@@ -31,7 +30,7 @@ fetch('./assets/data/jobsData.json')
         loading.remove();
 
         if (!Array.isArray(jobs) || jobs.length === 0) {
-            container.innerHTML = '<p>No hay empleos disponibles por ahora.</p>';
+            jobsListingSection.innerHTML = '<p>No hay empleos disponibles por ahora.</p>';
             return;
         }
 
@@ -42,14 +41,14 @@ fetch('./assets/data/jobsData.json')
         renderPagination();
     })
     .catch((error) => {
-        container.innerHTML = '<p>No se pudieron cargar los empleos.</p>';
+        jobsListingSection.innerHTML = '<p>No se pudieron cargar los empleos.</p>';
         console.error('Error:', error);
     });
 
 
 // --- RENDER DE JOBS SEGÚN PÁGINA ---
 function renderJobs() {
-    container.innerHTML = ""; //Se limpia el contenedor para re-renderizar los jobs
+    jobsListingSection.innerHTML = ""; //Se limpia el contenedor para re-renderizar los jobs
 
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -60,7 +59,7 @@ function renderJobs() {
         const message = document.createElement('p');
         message.textContent = 'No existen trabajos disponibles con esa combinación de filtros';
         message.className = 'no-items-message';
-        container.appendChild(message);
+        jobsListingSection.appendChild(message);
     } else {
         jobsToShow.forEach((job) => {
             const article = document.createElement('article');
@@ -80,7 +79,7 @@ function renderJobs() {
             <button class="button-apply-job">Aplicar</button>
         `;
 
-            container.appendChild(article);
+            jobsListingSection.appendChild(article);
         });
     }
 }
