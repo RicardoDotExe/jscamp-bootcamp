@@ -3,10 +3,14 @@ import SearchFilters from "./SearchFilters"
 
 function SearchForm() {
     return (
-        <form role="search">
-            <SearchBar />
-            <SearchFilters />
-        </form>
+        <section className="jobs-search">
+            <h1>Encuentra tu próximo trabajo</h1>
+            <p>Explora miles de oportunidades en el sector tecnológico</p>
+            <form role="search">
+                <SearchBar />
+                <SearchFilters />
+            </form>
+        </section>
     )
 }
 
