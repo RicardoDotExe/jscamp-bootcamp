@@ -1,4 +1,4 @@
-function Pagination({ currentPage = 1, totalPages = 5, onPageChange }) {
+function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerPage, onResultsPerPageChange }) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
   const handlePrevious = (e) => {
@@ -78,7 +78,12 @@ function Pagination({ currentPage = 1, totalPages = 5, onPageChange }) {
     </nav>
     <div className="resultsPerPage">
         <p>Resultados por página:</p>
-        <select id="results-per-page" name="results-per-page">
+        <select
+          id="results-per-page"
+          name="results-per-page"
+          value={resultsPerPage}
+          onChange={(e) => onResultsPerPageChange(Number(e.target.value))}
+        >
             <option value="5" defaultValue>5</option>
             <option value="10">10</option>
             <option value="20">20</option>
