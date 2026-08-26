@@ -1,7 +1,10 @@
+import { Link } from "./Link"
+
 function Header() {
     return (
     <>
         <header>
+            <Link href='/' style={{ textDecoration: 'none' }}>
             <h1>
                 <svg fill="none" stroke="currentColor" strokeLinecap="round"
                     strokeLinejoin="round" strokeWidth="2"
@@ -11,11 +14,12 @@ function Header() {
                 </svg>
                 DevJobs
             </h1>
+            </Link>
 
             <nav>
                 { /* Faltó asociar el link de inicio en el header */ }
-                <a href="index.html">Inicio</a>
-                <a href="empleos.html">Empleos</a>
+                <Link href="/">Inicio</Link>
+                <Link href="/search">Empleos</Link>
             </nav>
             <div>
                 { /* <button className="upload-cv-button">Subir CV</button>
