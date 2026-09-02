@@ -1,4 +1,4 @@
-function Footer() {
+export function Footer() {
     return (
         <footer>
             <small>&copy; 2025 DevJobs. Todos los derechos
@@ -6,4 +6,4 @@ function Footer() {
         </footer>)
     }
 
-export default Footer
+// export default Footer
