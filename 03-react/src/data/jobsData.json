@@ -1,0 +1,290 @@
+[
+  {
+    "id": "frontend-frontend-company-remoto",
+    "title": "Desarrollador Frontend",
+    "company": "FrontEnd Company",
+    "location": "Remoto",
+    "description": "Buscamos un desarrollador frontend con experiencia en React, JavaScript y CSS para unirse a nuestro equipo.",
+    "data": {
+      "technology": ["react", "javascript"],
+      "location": "remoto",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "react-react-company-barcelona",
+    "title": "Desarrollador React",
+    "company": "React Company",
+    "location": "Barcelona",
+    "description": "React mola, es muy moderno. Si tú también eres un tío moderno y guay, pegas en nuestra empresa. No es necesario experiencia previa.",
+    "data": {
+      "technology": ["react", "javascript"],
+      "location": "barcelona",
+      "nivel": "junior"
+    }
+  },
+  {
+    "id": "java-javeando-ba",
+    "title": "Desarrollador Java",
+    "company": "Javeando",
+    "location": "Buenos Aires",
+    "description": "Java lleva funcionando casi los mismos años que lleva Internet existiendo. Si quieres un trabajo estable, con garantía de futuro, no dudes en aplicar con nosotros.",
+    "data": {
+      "technology": ["java"],
+      "location": "ba",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "fullstack-fullstack-company-guadalajara",
+    "title": "Desarrollador Full Stack",
+    "company": "FullStack Company",
+    "location": "Guadalajara",
+    "description": "¿Se te da bien todo tipo de lenguajes de programación y quieres trabajar en un entorno dinámico y desafiante? Somos tu empresa. ¡Aplícate ya!",
+    "data": {
+      "technology": ["javascript", "nodejs", "react"],
+      "location": "guadalajara",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "nodejs-node-friends-company-remoto",
+    "title": "Desarrollador Node.js",
+    "company": "Node Friends Company",
+    "location": "Remoto",
+    "description": "Buscamos un desarrollador Node.js con experiencia en JavaScript y frameworks como Express para unirse a nuestro equipo. Necesario +50 años de experiencia demostrables.",
+    "data": {
+      "technology": ["nodejs", "javascript"],
+      "location": "remoto",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "backend-back-company-madrid",
+    "title": "Desarrollador Backend",
+    "company": "Back Company",
+    "location": "Madrid",
+    "description": "Buscamos un desarrollador backend con experiencia en Node.js, Express y bases de datos NoSQL para unirse a nuestro equipo. Aquí nadie sabe Front, no te precupes, esas tareas se delegan al equipo correspondiente.",
+    "data": {
+      "technology": ["nodejs", "javascript"],
+      "location": "madrid",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "frontend-empresa-xyz-remoto",
+    "title": "Desarrollador Frontend",
+    "company": "Empresa XYZ",
+    "location": "Remoto",
+    "description": "Buscamos un desarrollador frontend con experiencia en React, JavaScript y CSS para unirse a nuestro equipo.",
+    "data": {
+      "technology": ["react", "javascript"],
+      "location": "remoto",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "htmlcss-friendly-company-cdmx",
+    "title": "Desarrollador HTML & CSS",
+    "company": "Friendly Company",
+    "location": "Ciudad de Mexico",
+    "description": "Buscamos un desarrollador HTML & CSS sin experiencia, recién salido de los estudios. Los primeros 3 meses te pagamos un curso de JavaScript impartido por el maestro de la programación Midudev.",
+    "data": {
+      "technology": ["javascript"],
+      "location": "cdmx",
+      "nivel": "junior"
+    }
+  },
+  {
+    "id": "angular-senior-angular-company-monterrey",
+    "title": "Desarrollador Senior Angular",
+    "company": "Senior Angular Company",
+    "location": "Monterrey",
+    "description": "Buscamos un desarrollador frontend con experiencia en React, JavaScript y CSS para unirse a nuestro equipo.",
+    "data": {
+      "technology": ["angular", "javascript"],
+      "location": "monterrey",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "python-dataworks-madrid",
+    "title": "Desarrollador Python Backend",
+    "company": "DataWorks",
+    "location": "Madrid",
+    "description": "Buscamos un desarrollador backend especializado en Python y Django para el desarrollo de APIs internas y servicios de datos.",
+    "data": {
+      "technology": ["python"],
+      "location": "madrid",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "lead-react-visiontech-barcelona",
+    "title": "Lead React Developer",
+    "company": "VisionTech",
+    "location": "Barcelona",
+    "description": "Lidera un equipo de desarrolladores frontend en proyectos React de gran escala. Experiencia en gestión y buenas prácticas de testing.",
+    "data": {
+      "technology": ["react", "javascript"],
+      "location": "barcelona",
+      "nivel": "lead"
+    }
+  },
+  {
+    "id": "php-devfactory-cdmx",
+    "title": "Desarrollador PHP Full Stack",
+    "company": "DevFactory",
+    "location": "Ciudad de Mexico",
+    "description": "Estamos buscando un desarrollador full stack con conocimientos sólidos en PHP y JavaScript para mantener y escalar nuestra plataforma web.",
+    "data": {
+      "technology": ["php", "javascript"],
+      "location": "cdmx",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "nodejs-cloudwave-remoto",
+    "title": "Node.js Cloud Engineer",
+    "company": "CloudWave",
+    "location": "Remoto",
+    "description": "Únete a un equipo remoto para construir microservicios escalables usando Node.js y Express en entorno cloud.",
+    "data": {
+      "technology": ["nodejs", "javascript"],
+      "location": "remoto",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "junior-javascript-frontendlab-barcelona",
+    "title": "Junior JavaScript Developer",
+    "company": "FrontendLab",
+    "location": "Barcelona",
+    "description": "Primer trabajo en desarrollo web. Te enseñaremos a construir interfaces modernas con HTML, CSS y JavaScript puro.",
+    "data": {
+      "technology": ["javascript"],
+      "location": "barcelona",
+      "nivel": "junior"
+    }
+  },
+  {
+    "id": "java-banksoft-madrid",
+    "title": "Ingeniero Java Backend",
+    "company": "BankSoft",
+    "location": "Madrid",
+    "description": "Buscamos un ingeniero backend con experiencia en Java y Spring Boot para proyectos del sector financiero.",
+    "data": {
+      "technology": ["java"],
+      "location": "madrid",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "python-aiworks-guadalajara",
+    "title": "Desarrollador Python AI",
+    "company": "AIWorks",
+    "location": "Guadalajara",
+    "description": "Forma parte de nuestro equipo de inteligencia artificial. Python y bibliotecas de machine learning son imprescindibles.",
+    "data": {
+      "technology": ["python"],
+      "location": "guadalajara",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "csharp-softplus-monterrey",
+    "title": "Desarrollador C# Backend",
+    "company": "SoftPlus",
+    "location": "Monterrey",
+    "description": "Necesitamos un programador C# con experiencia en entornos .NET y arquitectura de servicios REST.",
+    "data": {
+      "technology": ["csharp"],
+      "location": "monterrey",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "react-uxflow-remoto",
+    "title": "React UI Developer",
+    "company": "UXFlow",
+    "location": "Remoto",
+    "description": "Buscamos un desarrollador React con buen ojo para el diseño y la experiencia de usuario.",
+    "data": {
+      "technology": ["react", "javascript"],
+      "location": "remoto",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "ruby-redlabs-ba",
+    "title": "Desarrollador Ruby on Rails",
+    "company": "RedLabs",
+    "location": "Buenos Aires",
+    "description": "Estamos contratando desarrolladores Ruby on Rails para aplicaciones SaaS en rápido crecimiento.",
+    "data": {
+      "technology": ["ruby"],
+      "location": "ba",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "lead-nodejs-techcore-guadalajara",
+    "title": "Lead Node.js Engineer",
+    "company": "TechCore",
+    "location": "Guadalajara",
+    "description": "Lidera el desarrollo de microservicios en Node.js, Express y NoSQL dentro de un entorno ágil.",
+    "data": {
+      "technology": ["nodejs", "javascript"],
+      "location": "guadalajara",
+      "nivel": "lead"
+    }
+  },
+  {
+    "id": "python-datasolutions-remoto",
+    "title": "Data Engineer Python",
+    "company": "DataSolutions",
+    "location": "Remoto",
+    "description": "Buscamos un data engineer remoto con experiencia en Python, ETL y manejo de grandes volúmenes de datos.",
+    "data": {
+      "technology": ["python"],
+      "location": "remoto",
+      "nivel": "senior"
+    }
+  },
+  {
+    "id": "c-devhouse-madrid",
+    "title": "Desarrollador C",
+    "company": "DevHouse",
+    "location": "Madrid",
+    "description": "Buscamos desarrollador C con conocimientos en sistemas embebidos para proyectos de hardware industrial.",
+    "data": {
+      "technology": ["c"],
+      "location": "madrid",
+      "nivel": "mid"
+    }
+  },
+  {
+    "id": "junior-php-webstudio-cdmx",
+    "title": "Desarrollador Junior PHP",
+    "company": "WebStudio",
+    "location": "Ciudad de Mexico",
+    "description": "Si acabas de salir de tus estudios y te apasiona la web, únete a nuestro equipo para aprender PHP y bases de datos.",
+    "data": {
+      "technology": ["php"],
+      "location": "cdmx",
+      "nivel": "junior"
+    }
+  },
+  {
+    "id": "senior-java-syslogic-barcelona",
+    "title": "Senior Java Developer",
+    "company": "SysLogic",
+    "location": "Barcelona",
+    "description": "Buscamos un perfil senior en Java con experiencia en Spring, APIs REST y despliegue en contenedores.",
+    "data": {
+      "technology": ["java"],
+      "location": "barcelona",
+      "nivel": "senior"
+    }
+  }
+]
