@@ -1,18 +1,18 @@
-import { useId } from "react"
-
-function SearchFilters({ selectedTechnology, onTechnologyChange, selectedLocation, onLocationChange, selectedExperienceLevel, onExperienceLevelChange }) {
-
-    const idTechnology = useId()
-    const idLocation = useId()
-    const idExperienceLevel = useId()
-
+function SearchFilters({
+    idTechnology,
+    idLocation,
+    idExperienceLevel,
+    filters
+}) {
     return (
         <div className="search-filters">
-            <select name="technology"
+
+            <select
+                name={idTechnology}
                 id={idTechnology}
-                value={selectedTechnology ?? ''}
-                onChange={(e) => onTechnologyChange(e.target.value)} >
-                <option value="" >Tecnología</option>
+                value={filters.technology}
+            >
+                <option value="">Tecnología</option>
 
                 <optgroup label="Tecnologías Frontend">
                     <option value="javascript">JavaScript</option>
@@ -32,9 +32,11 @@ function SearchFilters({ selectedTechnology, onTechnologyChange, selectedLocatio
                 </optgroup>
             </select>
 
-            <select name="location" id={idLocation}
-                value={selectedLocation ?? ''}
-                onChange={(e) => onLocationChange(e.target.value)}>
+            <select
+                name={idLocation}
+                id={idLocation}
+                value={filters.location}
+            >
                 <option value="">Ubicación</option>
                 <option value="remoto">Remoto</option>
                 <option value="cdmx">Ciudad de México</option>
@@ -42,19 +44,20 @@ function SearchFilters({ selectedTechnology, onTechnologyChange, selectedLocatio
                 <option value="monterrey">Monterrey</option>
                 <option value="barcelona">Barcelona</option>
                 <option value="madrid">Madrid</option>
-                <option value="ba">Buenos Aires</option>
             </select>
 
-            <select name="experience-level"
+            <select
+                name={idExperienceLevel}
                 id={idExperienceLevel}
-                value={selectedExperienceLevel ?? ''}
-                onChange={(e) => onExperienceLevelChange(e.target.value)}>
+                value={filters.experienceLevel}
+            >
                 <option value="">Nivel de experiencia</option>
                 <option value="junior">Junior</option>
                 <option value="mid">Mid-level</option>
                 <option value="senior">Senior</option>
                 <option value="lead">Lead</option>
             </select>
+
         </div>
     )
 }
