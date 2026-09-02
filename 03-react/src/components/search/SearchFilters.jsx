@@ -2,7 +2,8 @@ function SearchFilters({
     idTechnology,
     idLocation,
     idExperienceLevel,
-    filters
+    filters,
+    onFiltersChange
 }) {
     return (
         <div className="search-filters">
@@ -11,6 +12,7 @@ function SearchFilters({
                 name={idTechnology}
                 id={idTechnology}
                 value={filters.technology}
+                onChange={onFiltersChange}
             >
                 <option value="">Tecnología</option>
 
@@ -36,6 +38,7 @@ function SearchFilters({
                 name={idLocation}
                 id={idLocation}
                 value={filters.location}
+                onChange={onFiltersChange}
             >
                 <option value="">Ubicación</option>
                 <option value="remoto">Remoto</option>
@@ -50,6 +53,7 @@ function SearchFilters({
                 name={idExperienceLevel}
                 id={idExperienceLevel}
                 value={filters.experienceLevel}
+                onChange={onFiltersChange}
             >
                 <option value="">Nivel de experiencia</option>
                 <option value="junior">Junior</option>

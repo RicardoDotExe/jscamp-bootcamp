@@ -5,6 +5,12 @@ import JobListings from '../components/jobs/JobListings'
 import Pagination from '../components/search/Pagination'
 import SearchForm from '../components/search/SearchForm'
 
+const EMPTY_FILTERS = {
+    technology: '',
+    location: '',
+    experienceLevel: ''
+}
+
 const useFilters = () => {
     const [loading, setLoading] = useState(true)
     const [jobs, setJobs] = useState([])
@@ -29,11 +35,7 @@ const useFilters = () => {
             }
         }
 
-        return {
-            technology: '',
-            location: '',
-            experienceLevel: ''
-        }
+        return EMPTY_FILTERS
     })
 
     const [resultsPerPage, setResultsPerPage] = useState(5)
@@ -164,13 +166,7 @@ const useFilters = () => {
         textToFilter !== ''
 
     const handleClearFilters = () => {
-        const emptyFilters = {
-            technology: '',
-            location: '',
-            experienceLevel: ''
-        }
-
-        setFilters(emptyFilters)
+        setFilters(EMPTY_FILTERS)
         setTextToFilter('')
         setCurrentPage(1)
 

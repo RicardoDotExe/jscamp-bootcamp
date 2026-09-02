@@ -115,6 +115,7 @@ function SearchForm({
                     idLocation={idLocation}
                     idExperienceLevel={idExperienceLevel}
                     filters={filters}
+                    onFiltersChange={handleFiltersChange}
                 />
 
                 {hasActiveFilters && (
