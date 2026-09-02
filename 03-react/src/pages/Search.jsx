@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from '../hooks/useRouter'
-import Spinner from '../components/search/Spinner'
-import JobListings from '../components/jobs/JobListings'
-import Pagination from '../components/search/Pagination'
-import SearchForm from '../components/search/SearchForm'
+// import Spinner from '../components/search/Spinner'
+// Lo mismo que en `App.jsx`, lo mejor es exportar/importar componentes de manera nombrada
+import { Spinner } from '../components/search/Spinner'
+// import JobListings from '../components/jobs/JobListings'
+import { JobListings } from '../components/jobs/JobListings'
+// import Pagination from '../components/search/Pagination'
+import { Pagination } from '../components/search/Pagination'
+// import SearchForm from '../components/search/SearchForm'
+import { SearchForm } from '../components/search/SearchForm'
 
 const EMPTY_FILTERS = {
     technology: '',
@@ -197,6 +202,7 @@ export function SearchPage() {
         loading,
         error,
         jobs,
+        totalJobs,
         totalPages,
         currentPage,
         resultsPerPage,
@@ -209,6 +215,11 @@ export function SearchPage() {
         handlePageChange,
         handleResultsPerPageChange
     } = useFilters()
+
+    // Faltó agregar el título de la pestaña con los resultados y página actual
+    useEffect(() => {
+        document.title = `Resultados ${totalJobs} | Página ${currentPage} | DevJobs`
+    }, [totalJobs, currentPage])
 
     return (
         <>
@@ -241,13 +252,23 @@ export function SearchPage() {
                     )
                 }
 
-                <Pagination
+                {/* <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                     resultsPerPage={resultsPerPage}
                     onResultsPerPageChange={handleResultsPerPageChange}
-                />
+                /> */}
+                {/* La paginación no se debe ver siempre, solo cuando hay resultados disponibles. Si no hay, la ocultamos */}
+                {jobs.length > 0 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        resultsPerPage={resultsPerPage}
+                        onResultsPerPageChange={handleResultsPerPageChange}
+                    />
+                )}
             </section>
         </>
     )

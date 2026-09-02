@@ -1,6 +1,6 @@
 import { Link } from "./Link"
 
-function Header() {
+export function Header() {
     return (
     <>
         <header>
@@ -31,4 +31,4 @@ function Header() {
         </>
         )}
 
-export default Header
+// export default Header
