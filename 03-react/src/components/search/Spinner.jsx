@@ -1,5 +1,5 @@
-function Spinner() {
+export function Spinner() {
     return <div className="spinner"></div>
 }
 
-export default Spinner
+// export default Spinner
