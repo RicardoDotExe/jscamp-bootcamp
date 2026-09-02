@@ -1,39 +1,41 @@
-function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerPage, onResultsPerPageChange }) {
+export function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerPage, onResultsPerPageChange }) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
-  const handlePrevious = (e) => {
-    e.preventDefault()
+  // Ahora que pasamos a <button> ya no hace falta preventDefault
+  const handlePrevious = () => {
+    // e.preventDefault()
     if (currentPage > 1) {
       onPageChange(currentPage - 1) // ← Llamamos a la función del padre
     }
   }
 
-  const handleNext = (e) => {
-    e.preventDefault()
+  const handleNext = () => {
+    // e.preventDefault()
     if (currentPage < totalPages) {
       onPageChange(currentPage + 1) // ← Llamamos a la función del padre
     }
   }
 
-  const handlePageClick = (e, page) => {
-    e.preventDefault()
-    onPageChange(page) // ← Llamamos a la función del padre
-  }
+  // const handlePageClick = (e, page) => {
+  //   e.preventDefault()
+  //   onPageChange(page) // ← Llamamos a la función del padre
+  // }
 
-  const styleLinkLeft = {
-    opacity: currentPage === 1 ? 0.5 : 1,
-    cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-  }
+  // const styleLinkLeft = {
+  //   opacity: currentPage === 1 ? 0.5 : 1,
+  //   cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+  // }
 
-  const styleLinkRight = {
-    opacity: currentPage === totalPages ? 0.5 : 1,
-    cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-  }
+  // const styleLinkRight = {
+  //   opacity: currentPage === totalPages ? 0.5 : 1,
+  //   cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+  // }
 
   return (
     <div>
     <nav className="pagination">
-      <a href="#" style={styleLinkLeft} onClick={handlePrevious}>
+      {/* Cambiamos <a href="#"> por <button>: con esto tenemos un disabled real y mejor accesibilidad */}
+      {/* <a href="#" style={styleLinkLeft} onClick={handlePrevious}>
         <svg
           width="16"
           height="16"
@@ -47,20 +49,35 @@ function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerP
           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
           <path d="M15 6l-6 6l6 6" />
         </svg>
-      </a>
+      </a> */}
+      <button disabled={currentPage === 1} onClick={handlePrevious}>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M15 6l-6 6l6 6" />
+        </svg>
+      </button>
 
       {pages.map((page) => (
-        <a
+        // <a key={page} className={currentPage === page ? 'is-active' : ''} href="#" onClick={(e) => handlePageClick(e, page)}>
+        <button
           key={page}
           className={currentPage === page ? 'is-active' : ''}
-          href="#"
-          onClick={(e) => handlePageClick(e, page)}
+          onClick={() => onPageChange(page)}
         >
           {page}
-        </a>
+        </button>
       ))}
 
-      <a href="#" style={styleLinkRight} onClick={handleNext}>
+      {/* <a href="#" style={styleLinkRight} onClick={handleNext}>
         <svg
           width="16"
           height="16"
@@ -74,7 +91,22 @@ function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerP
           <path stroke="none" d="M0 0h24v24H0z" fill="none" />
           <path d="M9 6l6 6l-6 6" />
         </svg>
-      </a>
+      </a> */}
+      <button disabled={currentPage === totalPages} onClick={handleNext}>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M9 6l6 6l-6 6" />
+        </svg>
+      </button>
     </nav>
     <div className="resultsPerPage">
         <p>Resultados por página:</p>
@@ -84,7 +116,8 @@ function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerP
           value={resultsPerPage}
           onChange={(e) => onResultsPerPageChange(Number(e.target.value))}
         >
-            <option value="5" defaultValue>5</option>
+            {/* <option value="5" defaultValue>5</option> ← defaultValue no es válido en <option> */}
+            <option value="5">5</option>
             <option value="10">10</option>
             <option value="20">20</option>
             <option value="50">50</option>
@@ -94,4 +127,4 @@ function Pagination({ currentPage = 1, totalPages = 5, onPageChange, resultsPerP
   )
 }
 
-export default Pagination
+// export default Pagination
