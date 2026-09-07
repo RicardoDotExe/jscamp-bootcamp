@@ -1,5 +1,8 @@
 # Aquí puedes dejar tus dudas
 
+<!-- ¡Creo que lo he entendido todo, muchísimas gracias! -->
+
+
 ## Primera parte
 
 <!-- Dudas de la primera parte del ejercicio -->
