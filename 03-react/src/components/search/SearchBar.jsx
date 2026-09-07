@@ -1,4 +1,4 @@
-function SearchBar({ idText, currentText, onTextChange }) {
+export function SearchBar({ idText, currentText, onTextChange }) {
     return (
         <div className="search-bar">
             <svg
@@ -38,4 +38,4 @@ function SearchBar({ idText, currentText, onTextChange }) {
     )
 }
 
-export default SearchBar
+// export default SearchBar

@@ -1,4 +1,4 @@
-function SearchFilters({
+export function SearchFilters({
     idTechnology,
     idLocation,
     idExperienceLevel,
@@ -66,4 +66,4 @@ function SearchFilters({
     )
 }
 
-export default SearchFilters
+// export default SearchFilters

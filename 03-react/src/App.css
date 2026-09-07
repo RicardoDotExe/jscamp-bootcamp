@@ -481,6 +481,44 @@ select {
   }
 }
 
+/* Agregamos el CSS de los botones de paginación: mismos estilos que los <a> + estado disabled real, que era algo que faltaba */
+.pagination {
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-radius: 0.375rem;
+    font: inherit;
+    cursor: pointer;
+    transition: all .3s;
+
+    &:hover:not(:disabled),
+    &:focus:not(:disabled) {
+      background-color: #fff;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.90);
+    }
+
+    &.is-active {
+      background-color: var(--primary-light);
+      color: white;
+      pointer-events: none;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
 /*Lista de empleos*/
 .jobs-listings {
   border: 1px solid rgba(255, 255, 255, .3);

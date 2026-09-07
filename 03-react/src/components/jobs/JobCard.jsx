@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function JobCard({ job }) {
+export function JobCard({ job }) {
     const [aplicado, setAplicado] = useState(false)
 
     const handleAplicar = () => {
@@ -30,4 +30,4 @@ function JobCard({ job }) {
     )
 }
 
-export default JobCard
+// export default JobCard

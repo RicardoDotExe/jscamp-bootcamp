@@ -1,6 +1,8 @@
-import { useId, useRef, useState } from 'react'
-import SearchBar from './SearchBar'
-import SearchFilters from './SearchFilters'
+// Importamos useEffect para limpiar el debounce (ver más abajo)
+// import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { SearchBar } from './SearchBar'
+import { SearchFilters } from './SearchFilters'
 
 const useSearchForm = ({
     idTechnology,
@@ -13,6 +15,9 @@ const useSearchForm = ({
     onClearFilters
 }) => {
     const timeoutId = useRef(null)
+
+    // Limpiamos el debounce pendiente si el componente se desmonta, similar a la limpieza que hicimos en `useRouter`.
+    useEffect(() => () => clearTimeout(timeoutId.current), [])
 
     const [searchText, setSearchText] = useState(initialText)
 
@@ -62,7 +67,7 @@ const useSearchForm = ({
     }
 }
 
-function SearchForm({
+export function SearchForm({
     initialText,
     filters,
     onSearch,
@@ -131,4 +136,4 @@ function SearchForm({
     )
 }
 
-export default SearchForm
+// export default SearchForm
