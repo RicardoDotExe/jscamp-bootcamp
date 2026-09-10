@@ -1,7 +1,13 @@
 import { NavLink } from 'react-router'
 import { Link } from "./Link"
+import { useAuthStore } from '../store/authStore'
+import { useFavoritesStore } from '../store/favoritesStore'
 
 export function Header() {
+    const { isLoggedIn } = useAuthStore()
+    const { countFavorites } = useFavoritesStore()
+    const numberOfFavorites = countFavorites()
+
     return (
         <>
             <header>
@@ -18,19 +24,21 @@ export function Header() {
                 </Link>
 
                 <nav>
-                    <NavLink
-                        className={({ isActive }) => isActive ? 'nav-link-active' : ''}
-                        to="/"
-                    >
+                    <NavLink className={({ isActive }) => isActive ? 'nav-link-active' : ''} to="/" >
                         Inicio
                     </NavLink>
 
-                    <NavLink
-                        className={({ isActive }) => isActive ? 'nav-link-active' : ''}
-                        to="/search"
-                    >
+                    <NavLink className={({ isActive }) => isActive ? 'nav-link-active' : ''} to="/search" >
                         Empleos
-                    </NavLink>
+                    </NavLink> 
+                    {
+                        isLoggedIn && (
+                            <NavLink 
+                                className={({ isActive }) => isActive ? 'nav-link-active' : ''} to="/profile">
+                                    Perfil ❤️ {numberOfFavorites}
+                                </NavLink>
+                        )
+                    }
                 </nav>
 
                 <div>
@@ -39,7 +47,27 @@ export function Header() {
                         size="50">
                     </devjobs-avatar> */ }
                 </div>
+
+                <HeaderUserButton/>
+
+
             </header>
         </>
     )
+}
+
+const HeaderUserButton = () => {
+
+    const { isLoggedIn, login, logout } = useAuthStore()
+    const { clearFavorites } = useFavoritesStore()
+
+    const handleLogout = () => {
+    logout()
+    clearFavorites()
+  }
+
+  return isLoggedIn
+    ? <button onClick={handleLogout}>Cerrar sesión</button>
+    : <button onClick={login}>Iniciar sesión</button>
+
 }

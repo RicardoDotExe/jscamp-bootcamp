@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router'
 import { useState, useEffect } from 'react'
 import { Link } from '../components/Link'
 import styles from './Detail.module.css'
+import { useAuthStore } from '../store/authStore'
+import { useFavoritesStore } from '../store/favoritesStore'
 
 function JobSection({ title, content }) {
     return (
@@ -38,6 +40,28 @@ function DetailPageBreadCrumb({ job }) {
     )
 }
 
+function DetailApplyButton () {
+    const { isLoggedIn } = useAuthStore()
+
+    return (
+        <button disabled={ !isLoggedIn } className={styles.applyButton}>
+            {isLoggedIn ? "Aplicar Ahora" : "Inicia sesión para aplicar"}
+        </button>
+    )
+}
+
+function DetailFavoriteButton ({jobId}) {
+    const { isFavorite, toggleFavorite } = useFavoritesStore()
+
+    return (
+        <button
+        onClick={() => toggleFavorite(jobId)}
+        aria-label={isFavorite(jobId) ? 'Eliminar favorito' : 'Añadir favorito'}>
+            {isFavorite(jobId) ? '❤️' : '🤍'}
+        </button>
+    )
+}
+
 function DetailPageHeader({ job }) {
     const navigate = useNavigate()
 
@@ -59,12 +83,15 @@ function DetailPageHeader({ job }) {
                 </p>
             </div>
 
-            <button
+
+                <DetailApplyButton/>
+                <DetailFavoriteButton jobId={job.id}/>
+            {/*<button
                 className={styles.backButton}
                 onClick={() => navigate('/search')}
             >
                 ← Volver a empleos
-            </button>
+            </button>*/}
         </header>
     )
 }
