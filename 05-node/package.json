@@ -1,0 +1,7 @@
+{
+    "name": "ejemplos-de-node",
+    "type": "module",
+    "dependencies": {
+        "ms": "2.1.3"
+    }
+}
