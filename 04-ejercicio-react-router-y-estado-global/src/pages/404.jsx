@@ -1,8 +1,11 @@
-export function NotFoundPage () {
-  return (
-    <main>
-      <h1>404 - Página no encontrada</h1>
-      <p>Lo sentimos, la página que buscas no existe.</p>
-    </main>
-  )
+import { Link } from '../components/Link'
+
+export default function NotFoundPage() {
+    return (
+        <section>
+            <h1>404</h1>
+            <p>Ups, la página que buscas no existe</p>
+            <Link href="/">Volver al inicio</Link>
+        </section>
+    )
 }

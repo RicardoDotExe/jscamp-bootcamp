@@ -1,5 +1,8 @@
 # Aquí puedes dejar tus dudas
 
+<!-- ¡Creo que lo he entendido todo, muchísimas gracias! -->
+
+
 ## Primera parte
 
 <!-- Dudas de la primera parte del ejercicio -->
@@ -23,3 +26,11 @@
 ## Sexta parte
 
 <!-- Dudas de la sexta parte del ejercicio -->
+
+## Séptima parte
+
+<!-- Dudas de la séptima parte del ejercicio -->
+
+## Ejercicio extra
+
+<!-- Dudas del ejercicio extra -->

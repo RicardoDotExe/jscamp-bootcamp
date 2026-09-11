@@ -1,16 +1,47 @@
-import { Header } from './components/Header.jsx'
-import { Footer } from './components/Footer.jsx'
+import { lazy, Suspense } from 'react'
+import { Routes, Route } from 'react-router'
 
-import { HomePage } from './pages/Home.jsx'
-import { SearchPage } from './pages/Search.jsx'
-import { Route } from './components/Route.jsx'
+import { Footer } from './components/Footer.jsx'
+import { Header } from './components/Header.jsx'
+import { ProtectedRoute } from './components/ProtectedRoute.jsx'
+
+const HomePage = lazy(() => import('./pages/Home.jsx'))
+const SearchPage = lazy(() => import('./pages/Search.jsx'))
+const NotFoundPage = lazy(() => import('./pages/404.jsx'))
+const JobDetail = lazy(() => import('./pages/Detail.jsx'))
+const ProfilePage = lazy(() => import('./pages/ProfilePage.jsx'))
+const Login = lazy(() => import('./pages/Login.jsx'))
+const Register = lazy(() => import('./pages/Register.jsx'))
 
 function App() {
   return (
     <>
       <Header />
-      <Route path="/" component={HomePage} />
-      <Route path="/search" component={SearchPage} />
+
+      <main>
+        <Suspense fallback={<p>Cargando...</p>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+
+            <Route path="/search" element={<SearchPage />} />
+
+            <Route path="/jobs/:jobId" element={<JobDetail />} />
+
+            <Route path="/profile" element={
+              <ProtectedRoute redirectTo="/login">
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="*" element={<NotFoundPage />} />
+
+            <Route path="/login" element={<Login />} />
+
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </Suspense>
+      </main>
+
       <Footer />
     </>
   )
