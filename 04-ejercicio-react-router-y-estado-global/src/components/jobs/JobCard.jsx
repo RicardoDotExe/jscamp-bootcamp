@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link } from '../Link'
 import { useAuthStore } from '../../store/authStore'
 import { useFavoritesStore } from '../../store/favoritesStore'
+import { Link } from '../Link'
 
 function JobCardFavoriteButton({ jobId }) {
     const { isLoggedIn } = useAuthStore()
@@ -62,7 +62,8 @@ export function JobCard({ job }) {
                 <p>{job.descripcion}</p>
             </div>
 
-            <Link href={`/jobs/${job.id}`}>
+            {/* Hacemos el cambio en base al nuevo contrato de App.jsx */}
+            <Link href={`/job/${job.id}`}>
                 Ver detalles
             </Link>
             <JobCardApplyButton />

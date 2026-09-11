@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router'
+import { Route, Routes } from 'react-router'
 
 import { Footer } from './components/Footer.jsx'
 import { Header } from './components/Header.jsx'
@@ -25,7 +25,8 @@ function App() {
 
             <Route path="/search" element={<SearchPage />} />
 
-            <Route path="/jobs/:jobId" element={<JobDetail />} />
+            /* Lo que hiciste está genial! Paso el path a este formato porque lo vas a ver en muchos sitios. Primero el nombre en singular y segundo el id explicito */
+            <Route path="/job/:id" element={<JobDetail />} />
 
             <Route path="/profile" element={
               <ProtectedRoute redirectTo="/login">

@@ -1,9 +1,10 @@
-import { useParams, useNavigate } from 'react-router'
-import { useState, useEffect } from 'react'
-import { Link } from '../components/Link'
-import styles from './Detail.module.css'
-import { useAuthStore } from '../store/authStore'
-import { useFavoritesStore } from '../store/favoritesStore'
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
+import snarkdown from 'snarkdown'; // Faltó este punto: convierte el Markdown de la API a HTML
+import { Link } from '../components/Link';
+import { useAuthStore } from '../store/authStore';
+import { useFavoritesStore } from '../store/favoritesStore';
+import styles from './Detail.module.css';
 
 function JobSection({ title, content }) {
     return (
@@ -12,9 +13,11 @@ function JobSection({ title, content }) {
                 {title}
             </h2>
 
-            <div className={styles.sectionContent}>
-                {content}
-            </div>
+            {/* snarkdown convierte el Markdown a HTML y lo inyectamos de forma controlada, evitando que pasen scripts maliciosos. Lo agregamos, así ya te queda */}
+            <div
+                className={styles.sectionContent}
+                dangerouslySetInnerHTML={{ __html: snarkdown(content) }}
+            />
         </section>
     )
 }
@@ -63,8 +66,6 @@ function DetailFavoriteButton ({jobId}) {
 }
 
 function DetailPageHeader({ job }) {
-    const navigate = useNavigate()
-
     return (
         <header className={styles.header}>
             <div className={styles.headerInfo}>
@@ -86,18 +87,13 @@ function DetailPageHeader({ job }) {
 
                 <DetailApplyButton/>
                 <DetailFavoriteButton jobId={job.id}/>
-            {/*<button
-                className={styles.backButton}
-                onClick={() => navigate('/search')}
-            >
-                ← Volver a empleos
-            </button>*/}
         </header>
     )
 }
 
 export default function JobDetail() {
-    const { jobId } = useParams()
+    /* Hicimos el cambio de contrato en App.jsx */
+    const { id } = useParams()
     const navigate = useNavigate()
 
     const [job, setJob] = useState(null)
@@ -105,7 +101,7 @@ export default function JobDetail() {
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        fetch(`https://jscamp-api.vercel.app/api/jobs/${jobId}`)
+        fetch(`https://jscamp-api.vercel.app/api/jobs/${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Oferta no encontrada')
@@ -122,7 +118,7 @@ export default function JobDetail() {
             .finally(() => {
                 setLoading(false)
             })
-    }, [jobId])
+    }, [id])
 
     if (loading) {
         return (

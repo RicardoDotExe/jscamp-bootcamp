@@ -1,91 +1,92 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from '../hooks/useRouter'
-import { Spinner } from '../components/search/Spinner'
+import { useSearchParams } from 'react-router'
 import { JobListings } from '../components/jobs/JobListings'
 import { Pagination } from '../components/search/Pagination'
 import { SearchForm } from '../components/search/SearchForm'
-
-const EMPTY_FILTERS = {
-    technology: '',
-    location: '',
-    experienceLevel: ''
-}
+import { Spinner } from '../components/search/Spinner'
 
 const useFilters = () => {
+    // La URL es la única fuente de verdad en este ejercicio, vamos a leerlos y manejar los filtros iniciales a partir de aquí
+    const [searchParams, setSearchParams] = useSearchParams()
+
+    const textToFilter = searchParams.get('text') ?? ''
+    const filters = {
+        technology: searchParams.get('technology') ?? '',
+        location: searchParams.get('type') ?? '', // la API llama 'type' a la ubicación
+        experienceLevel: searchParams.get('level') ?? ''
+    }
+    const currentPage = Number(searchParams.get('page')) || 1
+
     const [loading, setLoading] = useState(true)
     const [jobs, setJobs] = useState([])
     const [totalJobs, setTotalJobs] = useState(0)
     const [error, setError] = useState(null)
 
-    const [currentPage, setCurrentPage] = useState(1)
-
-    const [textToFilter, setTextToFilter] = useState(() => {
-        const params = new URLSearchParams(window.location.search)
-        return params.get('text') || ''
-    })
-
-    const [filters, setFilters] = useState(() => {
-        const savedFilters = localStorage.getItem('jobFilters')
-
-        if (savedFilters) {
-            try {
-                return JSON.parse(savedFilters)
-            } catch (error) {
-                console.error('Error al leer los filtros:', error)
-            }
-        }
-
-        return EMPTY_FILTERS
-    })
-
     const [resultsPerPage, setResultsPerPage] = useState(5)
 
+    // Este helper se encarga de aplicar cambios a los parámetros de la URL y reiniciar la paginación
+    const updateParams = (apply) => {
+        setSearchParams((prev) => {
+            const params = new URLSearchParams(prev)
+            apply(params)
+            params.delete('page')
+            return params
+        })
+    }
+
     const handleSearch = (newFilters) => {
-        setFilters(newFilters)
-        setCurrentPage(1)
+        const listOfFilters = [
+            ['technology', newFilters.technology],
+            ['type', newFilters.location],
+            ['level', newFilters.experienceLevel]
+        ]
+
+        updateParams((params) => {
+            for (const [param, value] of listOfFilters) {
+                value
+                ? params.set(param, value)
+                : params.delete(param)
+            }
+        })
     }
 
     const handleTextFilter = (text) => {
-        setTextToFilter(text)
-        setCurrentPage(1)
+        updateParams((params) => {
+            text
+            ? params.set('text', text)
+            : params.delete('text')
+        })
     }
 
-    // Guardar filtros en localStorage
-    useEffect(() => {
-        try {
-            localStorage.setItem(
-                'jobFilters',
-                JSON.stringify(filters)
-            )
-        } catch (error) {
-            console.error('Error al guardar los filtros:', error)
-        }
-    }, [filters])
+    const handleClearFilters = () => {
+        setSearchParams({})
+    }
 
-    // Obtener trabajos de la API
+    const handlePageChange = (page) => {
+        setSearchParams((prev) => {
+            const params = new URLSearchParams(prev)
+            params.set('page', page)
+            return params
+        })
+    }
+
+    const handleResultsPerPageChange = (value) => {
+        setResultsPerPage(value)
+
+        if (searchParams.has('page')) {
+            updateParams(() => {}) // al cambiar el tamaño de página volvemos a la página 1
+        }
+    }
+
+    // Obtener trabajos de la API cuando cambian los parámetros de la URL
     useEffect(() => {
         async function fetchJobs() {
             try {
                 setLoading(true)
                 setError(null)
 
-                const params = new URLSearchParams()
-
-                if (textToFilter) {
-                    params.append('text', textToFilter)
-                }
-
-                if (filters.technology) {
-                    params.append('technology', filters.technology)
-                }
-
-                if (filters.location) {
-                    params.append('type', filters.location)
-                }
-
-                if (filters.experienceLevel) {
-                    params.append('level', filters.experienceLevel)
-                }
+                const params = new URLSearchParams(searchParams)
+                params.delete('page') // la paginación es solo de la interfaz, la API usa limit/offset
 
                 const offset = (currentPage - 1) * resultsPerPage
 
@@ -113,65 +114,15 @@ const useFilters = () => {
         }
 
         fetchJobs()
-    }, [filters, currentPage, textToFilter, resultsPerPage])
-
-    const { navigateTo } = useRouter()
-
-    // Actualizar la URL
-    useEffect(() => {
-        const params = new URLSearchParams()
-
-        if (textToFilter) {
-            params.append('text', textToFilter)
-        }
-
-        if (filters.technology) {
-            params.append('technology', filters.technology)
-        }
-
-        if (filters.location) {
-            params.append('type', filters.location)
-        }
-
-        if (filters.experienceLevel) {
-            params.append('level', filters.experienceLevel)
-        }
-
-        if (currentPage > 1) {
-            params.append('page', currentPage)
-        }
-
-        const newUrl = params.toString()
-            ? `${window.location.pathname}?${params.toString()}`
-            : window.location.pathname
-
-        navigateTo(newUrl)
-    }, [filters, currentPage, textToFilter, navigateTo])
+    }, [searchParams, currentPage, resultsPerPage])
 
     const totalPages = Math.ceil(
         totalJobs / resultsPerPage
     )
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page)
-    }
-
-    const handleResultsPerPageChange = (value) => {
-        setResultsPerPage(value)
-        setCurrentPage(1)
-    }
-
     const hasActiveFilters =
         Object.values(filters).some(value => value !== '') ||
         textToFilter !== ''
-
-    const handleClearFilters = () => {
-        setFilters(EMPTY_FILTERS)
-        setTextToFilter('')
-        setCurrentPage(1)
-
-        localStorage.removeItem('jobFilters')
-    }
 
     return {
         loading,
