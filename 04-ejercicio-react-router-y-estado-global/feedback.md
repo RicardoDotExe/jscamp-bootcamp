@@ -8,3 +8,9 @@ La idea fue:
 
 Cualquier duda nos puedes avisar, si?
 A seguir trabajando!
+
+
+--------------------
+
+
+Muchas gracias por vuestras correcciones! 
