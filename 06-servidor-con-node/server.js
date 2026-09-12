@@ -20,18 +20,30 @@ const server = createServer(async(req, res) => {
 
     const { method, url } = req
 
+    const [ pathName, queryString ] = url.split('?')
+    const searchParams = new URLSearchParams(queryString)
+
+    if (Number.isNaN(Number(searchParams.get('limit')) ||
+            Number(searchParams.get('offset')))) {
+            return sendJson(res, 400, { error: 'limit y offset deben de ser numeros'})
+            }
+
     if (method === 'GET') {
-        if (url === '/health') {
+        if (pathName === '/health') {
             return sendJson(res, 200, { status: 'ok', uptime: process.uptime() })
         }
 
-        if (url === '/users') {
-            return sendJson(res, 200, users)
+        if (pathName === '/users') {
+            const limit = Number(searchParams.get('limit')) || users.length
+            const offset = Number(searchParams.get('offset')) || 0
+            const paginatedUsers = users.slice(offset, offset + limit)
+
+            return sendJson(res, 200, paginatedUsers)
         }
     }
 
     if (method === 'POST') {
-        if (url === '/users') {
+        if (pathName === '/users') {
             const body = await json(req)
             if (!body || !body.name) {
                 return sendJson(res, 400, { error: 'Parametro name es obligatorio'})
