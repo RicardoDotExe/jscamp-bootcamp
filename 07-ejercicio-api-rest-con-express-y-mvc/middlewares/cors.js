@@ -1,3 +1,8 @@
 import cors from 'cors'
+import { ACCEPTED_ORIGINS } from '../config.js'
 
-/* Aquí debe ir la lógica de tu middleware */
+export const corsMiddleware = () => {
+  return cors({
+    origin: ACCEPTED_ORIGINS
+  })
+}
