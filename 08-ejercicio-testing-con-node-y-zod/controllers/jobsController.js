@@ -1,7 +1,9 @@
 import { JobModel } from '../models/jobsModel.js'
+import { validateJob, validatePartialJob } from '../schemas/jobsSchema.js'
 import { DEFAULTS } from '../config.js'
 
 export class JobController {
+
   // GET /jobs
   static async getAll(req, res) {
     try {
@@ -59,29 +61,15 @@ export class JobController {
   // POST /jobs
   static async create(req, res) {
     try {
-      const {
-        titulo,
-        empresa,
-        ubicacion,
-        descripcion,
-        data,
-        content
-      } = req.body
+      const result = validateJob(req.body)
 
-      if (!titulo || !empresa || !ubicacion) {
+      if (!result.success) {
         return res.status(400).json({
-          error: 'titulo, empresa and ubicacion are required'
+          error: result.error.issues
         })
       }
 
-      const newJob = await JobModel.create({
-        titulo,
-        empresa,
-        ubicacion,
-        descripcion,
-        data,
-        content
-      })
+      const newJob = await JobModel.create(result.data)
 
       return res.status(201).json(newJob)
     } catch (error) {
@@ -99,29 +87,18 @@ export class JobController {
     try {
       const { id } = req.params
 
-      const {
-        titulo,
-        empresa,
-        ubicacion,
-        descripcion,
-        data,
-        content
-      } = req.body
+      const result = validateJob(req.body)
 
-      if (!titulo || !empresa || !ubicacion) {
+      if (!result.success) {
         return res.status(400).json({
-          error: 'titulo, empresa and ubicacion are required'
+          error: result.error.issues
         })
       }
 
-      const updatedJob = await JobModel.update(id, {
-        titulo,
-        empresa,
-        ubicacion,
-        descripcion,
-        data,
-        content
-      })
+      const updatedJob = await JobModel.update(
+        id,
+        result.data
+      )
 
       if (!updatedJob) {
         return res.status(404).json({
@@ -145,7 +122,18 @@ export class JobController {
     try {
       const { id } = req.params
 
-      const updatedJob = await JobModel.patch(id, req.body)
+      const result = validatePartialJob(req.body)
+
+      if (!result.success) {
+        return res.status(400).json({
+          error: result.error.issues
+        })
+      }
+
+      const updatedJob = await JobModel.patch(
+        id,
+        result.data
+      )
 
       if (!updatedJob) {
         return res.status(404).json({
@@ -188,4 +176,5 @@ export class JobController {
       })
     }
   }
+
 }
