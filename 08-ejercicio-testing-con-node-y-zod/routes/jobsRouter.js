@@ -1,28 +1,40 @@
 import { Router } from 'express'
 import { JobController } from '../controllers/jobsController.js'
+import { validateJob, validatePartialJob } from '../schemas/jobsSchema.js'
 
 export const jobsRouter = Router()
 
-// GET /jobs
-// Obtener todos los trabajos, con filtros y paginación
+function validateCreate(req, res, next) {
+  const result = validateJob(req.body)
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: 'Invalid request',
+      details: result.error.issues
+    })
+  }
+
+  req.body = result.data
+  next()
+}
+
+function validatePartial(req, res, next) {
+  const result = validatePartialJob(req.body)
+
+  if (!result.success) {
+    return res.status(400).json({
+      error: 'Invalid request',
+      details: result.error.issues
+    })
+  }
+
+  req.body = result.data
+  next()
+}
+
 jobsRouter.get('/', JobController.getAll)
-
-// GET /jobs/:id
-// Obtener un trabajo concreto
 jobsRouter.get('/:id', JobController.getId)
-
-// POST /jobs
-// Crear un trabajo
-jobsRouter.post('/', JobController.create)
-
-// PUT /jobs/:id
-// Reemplazar un trabajo completo
-jobsRouter.put('/:id', JobController.update)
-
-// PATCH /jobs/:id
-// Actualizar parcialmente un trabajo
-jobsRouter.patch('/:id', JobController.patch)
-
-// DELETE /jobs/:id
-// Eliminar un trabajo
+jobsRouter.post('/', validateCreate, JobController.create)
+jobsRouter.put('/:id', validateCreate, JobController.update)
+jobsRouter.patch('/:id', validatePartial, JobController.patch)
 jobsRouter.delete('/:id', JobController.delete)
