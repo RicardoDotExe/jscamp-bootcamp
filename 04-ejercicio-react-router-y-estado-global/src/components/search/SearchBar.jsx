@@ -30,6 +30,7 @@ export function SearchBar({ idText, currentText, onTextChange }) {
                 id={idText}
                 name={idText}
                 type="text"
+                role="searchbox"
                 value={currentText ?? ''}
                 onChange={(e) => onTextChange(e.target.value)}
                 placeholder="Buscar trabajos, empresas o habilidades"
