@@ -94,7 +94,7 @@ const useFilters = () => {
                 params.append('offset', offset)
 
                 const response = await fetch(
-                    `https://jscamp-api.vercel.app/api/jobs?${params.toString()}`
+                    `http://localhost:1234/jobs?${params.toString()}`
                 )
 
                 if (!response.ok) {
