@@ -1,197 +1,392 @@
-# Ejercicio: Tests End-to-End con Playwright
+# Ejercicio: API REST con Express y patrón MVC
 
 ## Objetivo
 
-¡Hola! Bienvenido al último ejercicio del módulo de Testing.
+¡Hola! Felicidades por llegar al último ejercicio de Node.js previo al módulo de Testing.
 
-En este ejercicio vas a aplicar todo lo aprendido sobre **tests E2E (End-to-End)** usando **Playwright**. Escribirás tests que simulan el comportamiento de un usuario real navegando por la aplicación de búsqueda de empleos que creaste en el módulo de **Estado Global y React Router**.
+En este ejercicio vas a crear una API REST completa aplicando el **patrón MVC (Modelo-Vista-Controlador)**, siguiendo las mejores prácticas.
 
-La idea es que pruebes tu propia aplicación de punta a punta, validando que todo funciona correctamente desde la perspectiva del usuario.
+Trabajarás con los datos de jobs que te hemos dejado en `jobs.json` y con la estructura base de carpetas: `models`, `controllers` y `routes`.
 
-## Requisitos previos
+## Estructura del proyecto
 
-Antes de empezar con los tests, necesitas tener tu aplicación del módulo anterior funcionando.
+Tu proyecto ya tiene esta estructura:
 
-### Primer ejercicio: Levantar tu aplicación de React
-
-Es necesario que tu aplicación de React esté levantada, así podrás interactuar con ella durante los tests por medio de `http://localhost:5173`.
-
-### Segundo ejercicio: Test de navegación básica
-
-Crea tu primer test E2E que verifique que la aplicación carga correctamente.
-
-#### Requisitos
-
-En el archivo `tests/jobs.spec.js` escribe un test que:
-
-1. Navegue a la página principal (`http://localhost:5173`)
-2. Verifique que existe un buscador visible
-
-#### Ejecutar el test
-
-```bash
-npx playwright test
+```text
+├── app.js              # Punto de entrada de la aplicación
+├── jobs.json           # Base de datos en JSON con los trabajos
+├── models/
+│   └── jobs.js         # Lógica de acceso a datos
+├── controllers/
+│   └── jobs.js         # Lógica de negocio de los endpoints
+├── routes/
+│   └── jobs.js         # Definición de rutas
+└── middlewares/
+    └── cors.js         # Middleware de CORS
 ```
 
-Para ver el navegador en acción:
+## Código base
 
-```bash
-npx playwright test --headed
+En el archivo `app.js` encontrarás este código:
+
+```js
+import express from 'express'
+import { jobsRouter } from './routes/jobs.js'
+
+const PORT = 3000
+const app = express()
+
+app.use('/jobs', jobsRouter)
+
+app.listen(PORT, () => {
+  console.log(`Servidor levantado en http://localhost:${PORT}`)
+})
 ```
 
-Para ver la interfaz de depuración:
+También tienes el archivo `jobs.json` que te mencionamos anteriormente con datos de trabajos que servirá como base de datos.
 
-```bash
-npx playwright test --ui
-```
+## ¿Qué es el patrón MVC?
 
----
+El MVC separa la aplicación en tres componentes:
 
-### Tercer ejercicio: Test de búsqueda de empleos
+- **Model (Modelo)**: Gestiona los datos. En este caso, lee y manipula el archivo `jobs.json`
+- **Controller (Controlador)**: Contiene la lógica de negocio. Procesa las peticiones y decide qué responder
+- **Routes (Rutas)**: Define los endpoints y los conecta con los controladores
 
-Escribe un test que simule a un usuario buscando empleos por tecnología.
+## Tu tarea
 
-#### Requisitos
+Deberás implementar la lógica en los tres archivos principales siguiendo el patrón MVC usando **clases** o **funciones** (usaremos clases para explicar los ejercicios, pero también puedes usar funciones):
 
-El test debe:
+### 1. Model (`models/job.js`)
 
-1. Navegar a la página principal
-2. Localizar el input de búsqueda usando `getByRole('searchbox')`
-3. Escribir "React" en el buscador
-4. Hacer clic en el botón "Buscar"
-5. Verificar que aparecen resultados
-6. Verificar que al menos el primer resultado es visible
+Aquí crearás una clase `JobModel` con métodos estáticos o funciones para:
 
-#### Jerarquía de selectores (de mejor a peor)
+- `getAll({ text, title, level, limit, technology, offset })` - Obtener todos los jobs aplicando filtros
 
-1. **Roles ARIA** - `getByRole('button', { name: 'Buscar' })`
-2. **Texto/labels** - `getByText('Buscar')`
-3. **data-testid** - `getByTestId('search-button')`
-4. **Selectores CSS** - `.search-button` (último recurso)
+- `getById(id)` - Obtener un job por ID
 
----
+- `create({ titulo, empresa, ubicacion, descripcion, data, content })` - Crear un nuevo job
 
-### Cuarto ejercicio: Test de flujo completo de aplicación
+- `update(id, { titulo, empresa, ubicacion, descripcion, data, content })` - Actualizar un job
 
-Escribe un test que simule el flujo completo de un usuario aplicando a una oferta.
+- `partialUpdate(id, { titulo, empresa, ubicacion, descripcion, data, content })` - Actualizar parcialmente un job
 
-#### Requisitos
+- `delete(id)` - Eliminar un job
 
-El test debe simular estos pasos:
+### 2. Controller (`controllers/jobs.js`)
 
-1. Buscar empleos con "JavaScript"
-2. Hacer clic en el primer resultado
-3. Verificar que se muestra el detalle del empleo
-4. Hacer clic en "Iniciar sesión"
-5. Hacer clic en "Aplicar"
-6. Verificar que el botón cambia a "Aplicado"
+Aquí crearás una clase `JobController` con métodos estáticos que manejan las peticiones HTTP:
 
----
+- `getAll(req, res)` - Maneja GET `/jobs`
+- `getId(req, res)` - Maneja GET `/jobs/:id`
+- `create(req, res)` - Maneja POST `/jobs`
+- `update(req, res)` - Maneja PUT `/jobs/:id`
+- `partialUpdate(req, res)` - Maneja PATCH `/jobs/:id`
+- `delete(req, res)` - Maneja DELETE `/jobs/:id`
 
-### Quinto ejercicio: Test de filtros
+### 3. Routes (`routes/jobs.js`)
 
-Escribe tests que verifiquen los filtros de la aplicación.
+Aquí conectarás las rutas con los controladores.
 
-#### Requisitos
+### 4. Config (`config.js`)
 
-1. **Filtrar por ubicación**
-   - Seleccionar filtro "Remoto"
-   - Verificar que todos los resultados son remotos
+Crea un archivo de configuración con constantes por defecto:
 
-2. **Filtrar por nivel**
-   - Seleccionar filtro "Senior"
-   - Verificar que los resultados corresponden
-
-### Sexto ejercicio: Test de paginación
-
-Escribe un test que verifique la paginación de resultados.
-
-#### Requisitos
-
-1. **Verificar que aparece paginación si hay más de x resultados**
-   - Hacer una búsqueda que devuelva más de x resultados
-   - Verificar que aparece el componente de paginación
-
-2. **Navegar a la siguiente página**
-   - Hacer clic en "Siguiente"
-   - Verificar que cambian los resultados
-
-### Séptimo ejercicio: Test de detalle de empleo
-
-Escribe un test que verifique el detalle de un empleo.
-
-#### Requisitos
-
-1. **Verificar que se muestra el detalle de un empleo**
-   - Hacer clic en el primer resultado de la búsqueda
-   - Verificar que se muestra el detalle del empleo
-
-2. **Verificar que se puede aplicar a un empleo**
-   - Verificar que aparece el botón "Aplicar"
-   - Hacer clic en "Aplicar"
-   - Verificar que el botón cambia a "Aplicado"
-
----
-
-## Contenido Extra: Tests E2E con IA usando Stagehand (Opcional)
-
-**Nota:** Esta sección es completamente opcional y requiere acceso a una API key o usar Ollama localmente (gratis pero más lento).
-
-Si tienes acceso a una API key o puedes usar Ollama localmente, puedes animarte a hacer este ejercicio, sino no te preocupes, con los ejercicios anteriores ya tienes una excelente base de como hacer tests E2E.
-
-#### Pasos
-
-1. **Crear carpeta e inicializar proyecto**
-
-```bash
-mkdir stagehand-tests
-cd stagehand-tests
-npm init -y
-```
-
-2. **Instalar dependencias**
-
-```bash
-npm install @browserbasehq/stagehand
-```
-
-3. **Configurar ESM en `package.json`**
-
-Asegúrate de que tu `package.json` tenga el siguiente contenido:
-
-```json
-{
-  "type": "module"
+```js
+export const DEFAULTS = {
+  LIMIT_PAGINATION: 10,
+  LIMIT_OFFSET: 0,
+  PORT: 1234,
 }
 ```
 
-4. **Crear archivo `.env`**
+Esto servirá para que puedas usar los valores por defecto en los controladores y en el punto de entrada de la aplicación.
 
-```
-OPENAI_API_KEY=tu_api_key_aqui
-```
-
-**Importante:** Ojo de que no tengas una variable `OPENAI_API_KEY` global en tu sistema que pueda sobrescribir la del `.env`. Lo que nos pasó en la clase del módulo.
-
-1. **Agregar `.env` al `.gitignore`**
-
-```
-node_modules/
-.env
-```
-
-**Nota:** Los prompts en **inglés** suelen funcionar mejor que en español.
-
-Ya que esta parte del ejercicio es opcional, con lo que ya has aprendido de E2E y los videos de Stagehand, dejaremos que lo explores por tu cuenta y pruebes los tests que creas necesarios.
+Siempre es bueno tener un archivo de configuración que pueda modificar el comportamiento de la aplicación sin necesidad de modificar el código.
 
 ---
+
+## Primer ejercicio: GET - Listar todos los jobs con filtros
+
+Implementa un endpoint que devuelva todos los trabajos con soporte para filtros y paginación.
+
+### Requisitos
+
+- **Método:** GET
+- **Ruta:** `/jobs`
+- **Query params opcionales:**
+  - `title` - Filtra por título (case insensitive)
+  - `text` - Busca en título y descripción (case insensitive)
+  - `technology` - Filtra por tecnología específica
+  - `limit` - Cantidad de resultados (default: 10)
+  - `offset` - Desde qué posición empezar (default: 0)
+- **Respuesta:** Objeto con `data`, `total`, `limit` y `offset`
+- **Status code:** 200
+
+### Ejemplo de respuesta
+
+```json
+{
+  "data": [
+    {
+      "id": "7a4d1d8b-1e45-4d8c-9f1a-8c2f9a9121a4",
+      "titulo": "Desarrollador de Software Senior",
+      "empresa": "Tech Solutions Inc.",
+      "ubicacion": "Remoto",
+      "descripcion": "Buscamos un ingeniero de software con experiencia en desarrollo web...",
+      "data": {
+        "technology": ["react", "node", "javascript"],
+        "modalidad": "remoto",
+        "nivel": "senior"
+      },
+      "content": {
+        "description": "Tech Solutions Inc. está buscando un Ingeniero de Software Senior...",
+        "responsibilities": "- Diseñar, desarrollar y mantener aplicaciones web...",
+        "requirements": "- Licenciatura en Informática o campo relacionado...",
+        "about": "Tech Solutions Inc. es una empresa de tecnología innovadora..."
+      }
+    }
+  ],
+  "total": 1,
+  "limit": 10,
+  "offset": 0
+}
+```
+
+### Ejemplos de uso
+
+```bash
+# Todos los jobs (primeros 10)
+GET /jobs
+
+# Buscar por texto
+GET /jobs?text=frontend
+
+# Filtrar por tecnología
+GET /jobs?technology=react
+
+# Paginación
+GET /jobs?limit=5&offset=10
+
+# Combinar filtros
+GET /jobs?text=developer&technology=node&limit=20
+```
+
+---
+
+## Segundo ejercicio: GET - Obtener un job por ID
+
+Crea un endpoint para obtener un trabajo específico por su ID.
+
+### Requisitos
+
+- **Método:** GET
+- **Ruta:** `/jobs/:id`
+- **Respuesta:** El job encontrado o un error 404
+- **Status code:** 200 si existe, 404 si no existe
+
+### Ejemplo de respuesta exitosa
+
+```json
+{
+  "id": "7a4d1d8b-1e45-4d8c-9f1a-8c2f9a9121a4",
+  "titulo": "Desarrollador de Software Senior",
+  "empresa": "Tech Solutions Inc.",
+  "ubicacion": "Remoto",
+  "descripcion": "Buscamos un ingeniero de software con experiencia en desarrollo web y conocimientos en JavaScript, React y Node.js...",
+  "data": {
+    "technology": ["react", "node", "javascript"],
+    "modalidad": "remoto",
+    "nivel": "senior"
+  },
+  "content": {
+    "description": "Tech Solutions Inc. está buscando un Ingeniero de Software Senior...",
+    "responsibilities": "- Diseñar, desarrollar y mantener aplicaciones web...",
+    "requirements": "- Licenciatura en Informática o campo relacionado...",
+    "about": "Tech Solutions Inc. es una empresa de tecnología innovadora..."
+  }
+}
+```
+
+### Ejemplo de respuesta de error
+
+```json
+{
+  "error": "Job not found"
+}
+```
+
+---
+
+## Tercer ejercicio: POST - Crear un nuevo job
+
+Implementa un endpoint para crear un nuevo trabajo.
+
+### Requisitos
+
+- **Método:** POST
+- **Ruta:** `/jobs`
+- **Body esperado:** Objeto JSON con `titulo`, `empresa`, `ubicacion`, `descripcion`, `data` y `content`
+- **Respuesta:** El job creado con su ID generado
+- **Status code:** 201
+
+### Ejemplo de petición
+
+```json
+{
+  "titulo": "Ingeniero DevOps",
+  "empresa": "CloudTech",
+  "ubicacion": "Remoto",
+  "descripcion": "Buscamos un ingeniero DevOps con experiencia en contenedores y orquestación.",
+  "data": {
+    "technology": ["docker", "kubernetes", "aws"],
+    "modalidad": "remoto",
+    "nivel": "senior"
+  },
+  "content": {
+    "description": "CloudTech está buscando un Ingeniero DevOps...",
+    "responsibilities": "- Gestionar infraestructura cloud...",
+    "requirements": "- Experiencia con Docker y Kubernetes...",
+    "about": "CloudTech es una empresa líder en soluciones cloud..."
+  }
+}
+```
+
+### Ejemplo de respuesta
+
+```json
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "titulo": "Ingeniero DevOps",
+  "empresa": "CloudTech",
+  "ubicacion": "Remoto",
+  "descripcion": "Buscamos un ingeniero DevOps con experiencia en contenedores y orquestación.",
+  "data": {
+    "technology": ["docker", "kubernetes", "aws"],
+    "modalidad": "remoto",
+    "nivel": "senior"
+  },
+  "content": {
+    "description": "CloudTech está buscando un Ingeniero DevOps...",
+    "responsibilities": "- Gestionar infraestructura cloud...",
+    "requirements": "- Experiencia con Docker y Kubernetes...",
+    "about": "CloudTech es una empresa líder en soluciones cloud..."
+  }
+}
+```
+
+---
+
+## Cuarto ejercicio: PUT, PATCH y DELETE
+
+### PUT - Actualizar un job completo
+
+- **Método:** PUT
+- **Ruta:** `/jobs/:id`
+- **Descripción:** Reemplaza completamente un job existente
+
+### PATCH - Actualizar parcialmente un job
+
+- **Método:** PATCH
+- **Ruta:** `/jobs/:id`
+- **Descripción:** Actualiza solo algunos campos de un job
+
+### DELETE - Eliminar un job
+
+- **Método:** DELETE
+- **Ruta:** `/jobs/:id`
+- **Descripción:** Elimina un job del array
+
+---
+
+## Quinto ejercicio: Middleware de CORS
+
+Implementa un middleware para manejar CORS usando el paquete `cors` de npm.
+
+### Requisitos
+
+- Crear un middleware en `middlewares/cors.js`
+- Usar el paquete `cors` de npm
+- Configurar orígenes aceptados
+- Aplicar el middleware en `app.js`
+
+Las orígenes aceptados son:
+
+- `http://localhost:3000`
+- `http://localhost:1234`
+- `https://midu.dev`
+- `http://jscamp.dev`
+- `http://localhost:5173`
+
+---
+
+## Probando tu API
+
+Puedes probar tu API usando diferentes herramientas:
+
+### Con curl
+
+```bash
+# GET - Listar todos los jobs (primeros 10)
+curl http://localhost:1234/jobs
+
+# GET - Listar con filtros
+curl "http://localhost:1234/jobs?text=frontend&limit=5"
+
+# GET - Filtrar por tecnología
+curl "http://localhost:1234/jobs?technology=react"
+
+# GET - Con paginación
+curl "http://localhost:1234/jobs?limit=20&offset=10"
+
+# GET - Obtener job por ID
+curl http://localhost:1234/jobs/1
+
+# POST - Crear job
+curl -X POST http://localhost:1234/jobs \
+  -H "Content-Type: application/json" \
+  -d '{"titulo":"Full Stack Developer","empresa":"TechStart","ubicacion":"Valencia","data":{"descripcion":"Desarrollador full stack","tecnologias":["react","node"]}}'
+```
+
+### Con herramientas gráficas
+
+- **Bruno**: https://www.usebruno.com/
+
+---
+
+## Estructura final del proyecto
+
+Al completar el ejercicio, tu proyecto debería tener esta estructura:
+
+```text
+├── app.js                    # Servidor Express configurado
+├── config.js                 # Constantes y configuración
+├── jobs.json                 # Base de datos en JSON
+├── models/
+│   └── job.js               # Clase JobModel con métodos estáticos
+├── controllers/
+│   └── jobs.js              # Clase JobController con métodos estáticos
+├── routes/
+│   └── jobs.js              # Router con todas las rutas
+└── middlewares/
+    └── cors.js              # Middleware de CORS configurado
+```
+
+## Ventajas del patrón MVC
+
+Al completar este ejercicio habrás visto las ventajas de usar MVC:
+
+- **Mantenibilidad**: Cada archivo tiene una responsabilidad clara
+- **Escalabilidad**: Puedes añadir nuevos recursos fácilmente
+- **Testabilidad**: Puedes probar cada capa de forma independiente
+- **Reutilización**: La lógica del modelo puede usarse en diferentes controladores
 
 ## ¿Dudas?
 
 Recuerda que puedes:
 
-- Revisar las clases del módulo de Testing
-- Preguntar en Discord
-- Documentar tus dudas en `dudas.md`
+- Revisar las clases del módulo sobre Backend con Node.js y Express
+- Consultar en Discord
+- Poner tus dudas en `dudas.md`
 
-¡Mucho éxito con el ejercicio final del módulo de Testing! 🚀
+¡Mucho éxito con el ejercicio, y como siempre... A mover las manitas!
