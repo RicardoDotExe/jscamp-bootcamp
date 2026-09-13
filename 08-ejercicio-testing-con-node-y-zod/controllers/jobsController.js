@@ -1,9 +1,7 @@
 import { JobModel } from '../models/jobsModel.js'
-import { validateJob, validatePartialJob } from '../schemas/jobsSchema.js'
 import { DEFAULTS } from '../config.js'
 
 export class JobController {
-
   // GET /jobs
   static async getAll(req, res) {
     try {
@@ -28,7 +26,6 @@ export class JobController {
       return res.json(result)
     } catch (error) {
       console.error('Error getting jobs:', error)
-
       return res.status(500).json({
         error: 'Error getting jobs'
       })
@@ -39,7 +36,6 @@ export class JobController {
   static async getId(req, res) {
     try {
       const { id } = req.params
-
       const job = await JobModel.getById(id)
 
       if (!job) {
@@ -51,7 +47,6 @@ export class JobController {
       return res.json(job)
     } catch (error) {
       console.error('Error getting job:', error)
-
       return res.status(500).json({
         error: 'Error getting job'
       })
@@ -61,20 +56,10 @@ export class JobController {
   // POST /jobs
   static async create(req, res) {
     try {
-      const result = validateJob(req.body)
-
-      if (!result.success) {
-        return res.status(400).json({
-          error: result.error.issues
-        })
-      }
-
-      const newJob = await JobModel.create(result.data)
-
+      const newJob = await JobModel.create(req.body)
       return res.status(201).json(newJob)
     } catch (error) {
       console.error('Error creating job:', error)
-
       return res.status(500).json({
         error: 'Error creating job'
       })
@@ -86,19 +71,7 @@ export class JobController {
   static async update(req, res) {
     try {
       const { id } = req.params
-
-      const result = validateJob(req.body)
-
-      if (!result.success) {
-        return res.status(400).json({
-          error: result.error.issues
-        })
-      }
-
-      const updatedJob = await JobModel.update(
-        id,
-        result.data
-      )
+      const updatedJob = await JobModel.update(id, req.body)
 
       if (!updatedJob) {
         return res.status(404).json({
@@ -109,7 +82,6 @@ export class JobController {
       return res.json(updatedJob)
     } catch (error) {
       console.error('Error updating job:', error)
-
       return res.status(500).json({
         error: 'Error updating job'
       })
@@ -121,19 +93,7 @@ export class JobController {
   static async patch(req, res) {
     try {
       const { id } = req.params
-
-      const result = validatePartialJob(req.body)
-
-      if (!result.success) {
-        return res.status(400).json({
-          error: result.error.issues
-        })
-      }
-
-      const updatedJob = await JobModel.patch(
-        id,
-        result.data
-      )
+      const updatedJob = await JobModel.patch(id, req.body)
 
       if (!updatedJob) {
         return res.status(404).json({
@@ -144,7 +104,6 @@ export class JobController {
       return res.json(updatedJob)
     } catch (error) {
       console.error('Error patching job:', error)
-
       return res.status(500).json({
         error: 'Error patching job'
       })
@@ -155,7 +114,6 @@ export class JobController {
   static async delete(req, res) {
     try {
       const { id } = req.params
-
       const deletedJob = await JobModel.delete(id)
 
       if (!deletedJob) {
@@ -170,11 +128,9 @@ export class JobController {
       })
     } catch (error) {
       console.error('Error deleting job:', error)
-
       return res.status(500).json({
         error: 'Error deleting job'
       })
     }
   }
-
 }
