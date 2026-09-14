@@ -16,6 +16,7 @@ console.log('Empleos senior:', seniorJobs.length)
 
 if (jobs.length > 0 && candidates.length > 0) {
   const qualified = isQualified(candidates[0], jobs[0])
+
   console.log(`¿${candidates[0].name} está cualificado para ${jobs[0].title}?`, qualified)
 }
 
@@ -29,6 +30,7 @@ displaySearchResults(searchResult)
 // Probar resúmenes de empleos
 const summaries = getJobSummaries(jobs)
 console.log('\nResúmenes de empleos:')
+
 summaries.forEach((summary) => {
   console.log(`- ${summary.title} en ${summary.company} (${summary.location})`)
 })
