@@ -1,0 +1,52 @@
+name: 02 - Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      logging_level:
+        description: Nivel de logging
+        required: true
+        default: info
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
+          - error
+
+      environment:
+        description: Entorno de despliegue
+        required: true
+        default: staging
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+      dry_run:
+        description: Ejecutar sin aplicar cambios reales
+        required: true
+        default: true
+        type: boolean
+
+      reason:
+        description: Motivo de la ejecución
+        required: true
+        type: string
+
+jobs:
+  mostrar-inputs:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Mostrar inputs
+        env:
+          LOG_LEVEL: ${{ inputs.logging_level }}
+          ENVIRONMENT: ${{ inputs.environment }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          echo "LOG_LEVEL: $LOG_LEVEL"
+          echo "ENVIRONMENT: $ENVIRONMENT"
+          echo "DRY_RUN: $DRY_RUN"
+          echo "REASON: $REASON"
