@@ -46,7 +46,7 @@ jobs:
       - name: Deploy
         if: ${{ inputs.dry_run == false }}
         run: |
-          echo "Deploying to ${{ inputs.environment }}"
+          echo "Deploying to $ENVIRONMENT"
 
       - name: Dry run
         if: ${{ inputs.dry_run == true }}
