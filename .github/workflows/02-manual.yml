@@ -4,40 +4,32 @@ on:
   workflow_dispatch:
     inputs:
       logging_level:
-        description: Nivel de logging
+        description: Nivel de log
         required: true
         default: info
-        type: choice
-        options:
-          - info
-          - warning
-          - debug
-          - error
+        type: string
 
       environment:
         description: Entorno de despliegue
         required: true
-        default: staging
-        type: choice
-        options:
-          - development
-          - staging
-          - production
+        type: string
 
       dry_run:
-        description: Ejecutar sin aplicar cambios reales
+        description: Ejecutar sin aplicar cambios
         required: true
-        default: true
+        default: false
         type: boolean
 
       reason:
         description: Motivo de la ejecución
         required: true
+        default: Manual execution
         type: string
 
 jobs:
-  mostrar-inputs:
+  manual:
     runs-on: ubuntu-24.04
+
     steps:
       - name: Mostrar inputs
         env:
@@ -50,3 +42,13 @@ jobs:
           echo "ENVIRONMENT: $ENVIRONMENT"
           echo "DRY_RUN: $DRY_RUN"
           echo "REASON: $REASON"
+
+      - name: Deploy
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          echo "Deploying to ${{ inputs.environment }}"
+
+      - name: Dry run
+        if: ${{ inputs.dry_run == true }}
+        run: |
+          echo "Dry run: no changes will be applied"
