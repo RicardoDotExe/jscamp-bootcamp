@@ -11,7 +11,8 @@ on:
     # │ │ │ │ │
     - cron: "0 9 * * 1"
 
-  workflow_dispatch:
+    #Eliminar workflow_dispatch para que no se pueda ejecutar manualmente
+  workflow_dispatch: 
 
 jobs:
   saludo:
