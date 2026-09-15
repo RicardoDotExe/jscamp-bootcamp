@@ -1,0 +1,103 @@
+name: 05 - CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  frontend-lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Frontend lint
+        working-directory: 12-ejercicio-cicd
+        run: pnpm lint:frontend
+
+  frontend-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Frontend test
+        working-directory: 12-ejercicio-cicd
+        run: pnpm test:frontend
+
+  backend-lint:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Backend lint
+        working-directory: 12-ejercicio-cicd
+        run: pnpm lint:backend
+
+  backend-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Backend test
+        working-directory: 12-ejercicio-cicd
+        run: pnpm test:backend
+
+  frontend-build:
+    needs:
+      - frontend-lint
+      - frontend-test
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Frontend build
+        working-directory: 12-ejercicio-cicd
+        run: pnpm build:frontend
+
+  backend-build:
+    needs:
+      - backend-lint
+      - backend-test
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+
+      - name: Backend build
+        working-directory: 12-ejercicio-cicd
+        run: pnpm build:backend
