@@ -1,0 +1,22 @@
+name: 03 - Schedule
+
+on:
+  schedule:
+    # ┌──────── Minuto (0)
+    # │ ┌────── Hora (9, UTC)
+    # │ │ ┌──── Día del mes (* = cualquiera)
+    # │ │ │ ┌── Mes (* = cualquiera)
+    # │ │ │ │ ┌ Día de la semana (1 = lunes)
+    # │ │ │ │ │
+    # │ │ │ │ │
+    - cron: "0 9 * * 1"
+
+  workflow_dispatch:
+
+jobs:
+  saludo:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Saludar
+        run: echo "Hola desde GitHub Actions!"
