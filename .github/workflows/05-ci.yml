@@ -101,3 +101,24 @@ jobs:
       - name: Backend build
         working-directory: 12-ejercicio-cicd
         run: pnpm build:backend
+
+  frontend-test-matrix:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+        node: ['22', '24']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm-ci-cd
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Frontend test
+        working-directory: 12-ejercicio-cicd
+        run: pnpm test:frontend
