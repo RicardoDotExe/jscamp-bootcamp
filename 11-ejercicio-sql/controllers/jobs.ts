@@ -4,7 +4,6 @@ import type { JobFilters } from '../types'
 
 export class JobController {
   // GET /jobs
-  // Query params tipados
   static async getAll(req: Request<{}, {}, {}, JobFilters>, res: Response): Promise<void> {
     const { tech, modality, level } = req.query
     const jobs = await JobModel.getAll({ tech, modality, level })
@@ -12,7 +11,6 @@ export class JobController {
   }
 
   // GET /jobs/:id
-  // Params tipados
   static async getById(req: Request<{ id: string }>, res: Response): Promise<void> {
     const { id } = req.params
     const job = await JobModel.getById(id)
@@ -26,7 +24,6 @@ export class JobController {
   }
 
   // POST /jobs
-  // El body ya viene validado por el middleware
   static async create(req: Request, res: Response): Promise<void> {
     const newJob = await JobModel.create(req.body)
     res.status(201).json(newJob)

@@ -10,8 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "better-sqlite3": "^12.8.0",
-    "expres": "^0.0.5",
+    "better-sqlite3": "^12.11.1",
     "express": "^4.22.3",
     "zod": "^3.22.4"
   },
