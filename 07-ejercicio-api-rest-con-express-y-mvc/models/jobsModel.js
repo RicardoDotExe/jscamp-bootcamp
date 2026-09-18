@@ -51,9 +51,15 @@ export class JobModel {
       )
     }
 
+    /* Antes no había validación, un valor no numérico (?limit=abc) producía NaN y devolvía data vacía
     // Convertimos los parámetros de paginación a números
     const limitNumber = Number(limit)
     const offsetNumber = Number(offset)
+    */
+
+    // Convertimos a número y usamos el valor por defecto si el parámetro no es válido
+    const limitNumber = Number.isInteger(Number(limit)) && Number(limit) > 0 ? Number(limit) : DEFAULTS.LIMIT_PAGINATION
+    const offsetNumber = Number.isInteger(Number(offset)) && Number(offset) >= 0 ? Number(offset) : DEFAULTS.LIMIT_OFFSET
 
     // Paginación
     const paginatedJobs = filteredJobs.slice(
