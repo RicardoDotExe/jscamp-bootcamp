@@ -4,7 +4,9 @@ const jobSchema = z.object({
     titulo: z.string({
         error: 'El título es obligatorio'
     })
-        .min(1, 'El título no puede estar vacío')
+        /* .min(1, 'El título no puede estar vacío') */
+        // Colocamos un mínimo de 3 caracteres para el título
+        .min(3, 'El título debe tener al menos 3 caracteres')
         .max(100, 'El título no puede superar los 100 caracteres'),
 
     empresa: z.string({
@@ -21,8 +23,10 @@ const jobSchema = z.object({
 
     descripcion: z.string()
         .max(2000, 'La descripción no puede superar los 2000 caracteres')
-        .optional()
-        .default(''),
+        /* .optional()
+        .default('') */
+        // Sin default: en PATCH inyectaría campos no enviados y sobrescribiría datos. Los modelos ya aplican sus propios valores por defecto
+        .optional(),
 
     data: z.object({
         nivel: z.string()
@@ -36,16 +40,20 @@ const jobSchema = z.object({
         technology: z.array(
             z.string().min(1, 'La tecnología no puede estar vacía')
         )
+            /* .optional()
+            .default([]) */
+            // Sin default para no inyectar campos no enviados en PATCH
             .optional()
-            .default([])
     })
-        .optional()
-        .default({}),
+        /* .optional()
+        .default({}) */
+        .optional(),
 
     content: z.object({})
         .passthrough()
+        /* .optional()
+        .default({}) */
         .optional()
-        .default({})
 })
 
 export function validateJob (input) {
