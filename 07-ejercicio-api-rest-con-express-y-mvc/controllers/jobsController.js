@@ -1,5 +1,5 @@
-import { JobModel } from '../models/jobsModel.js'
 import { DEFAULTS } from '../config.js'
+import { JobModel } from '../models/jobsModel.js'
 
 export class JobController {
   // GET /jobs
@@ -176,10 +176,15 @@ export class JobController {
         })
       }
 
+      /* Devolvías 200 con cuerpo, 204 No Content es la práctica REST estándar para DELETE
       return res.json({
         message: 'Job deleted successfully',
         data: deletedJob
       })
+      */
+
+      // 204 No Content: el recurso se eliminó y no hay nada que devolver
+      return res.status(204).send()
     } catch (error) {
       console.error('Error deleting job:', error)
 
