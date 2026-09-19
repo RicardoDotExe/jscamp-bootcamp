@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 import db from '../db/database'
-import type { Job, CreateJobDTO, UpdateJobDTO, JobFilters } from '../types'
+import type { CreateJobDTO, Job, JobFilters, UpdateJobDTO } from '../types'
 
 interface JobRow {
   id: string
@@ -10,17 +10,17 @@ interface JobRow {
   description: string
   modality: Job['data']['modality']
   level: Job['data']['level']
-  content_description: string
+}
+
+// El contenido detallado vive en su propia tabla job_content.
+interface ContentRow {
+  description: string
   responsibilities: string
   requirements: string
   about: string
 }
 
-interface TechnologyRow {
-  name: string
-}
-
-function mapJobRow(row: JobRow, technologies: string[]): Job {
+function mapJobRow(row: JobRow, technologies: string[], content: ContentRow): Job {
   return {
     id: row.id,
     title: row.title,
@@ -29,37 +29,47 @@ function mapJobRow(row: JobRow, technologies: string[]): Job {
     description: row.description,
     data: { technology: technologies, modality: row.modality, level: row.level },
     content: {
-      description: row.content_description,
-      responsibilities: row.responsibilities,
-      requirements: row.requirements,
-      about: row.about,
+      description: content.description,
+      responsibilities: content.responsibilities,
+      requirements: content.requirements,
+      about: content.about,
     },
   }
 }
 
+// La tecnología es texto en job_technologies: no hace falta JOIN.
 function getTechnologiesByJobId(jobId: string): string[] {
   const rows = db.prepare(`
-    SELECT technologies.name
-    FROM technologies
-    INNER JOIN job_technologies ON technologies.id = job_technologies.technology_id
-    WHERE job_technologies.job_id = ?
-    ORDER BY technologies.name
-  `).all(jobId) as TechnologyRow[]
+    SELECT technology
+    FROM job_technologies
+    WHERE job_id = ?
+    ORDER BY technology
+  `).all(jobId) as { technology: string }[]
 
-  return rows.map((row) => row.name)
+  return rows.map((row) => row.technology)
+}
+
+// Cada job tiene una fila de contenido en job_content.
+function getJobContentByJobId(jobId: string): ContentRow {
+  const row = db.prepare(`
+    SELECT description, responsibilities, requirements, about
+    FROM job_content
+    WHERE job_id = ?
+  `).get(jobId) as ContentRow | undefined
+
+  return row ?? { description: '', responsibilities: '', requirements: '', about: '' }
 }
 
 function getJobByIdFromDatabase(id: string): Job | undefined {
   const row = db.prepare(`
-    SELECT id, title, company, location, description, modality, level,
-           content_description, responsibilities, requirements, about
+    SELECT id, title, company, location, description, modality, level
     FROM jobs
     WHERE id = ?
   `).get(id) as JobRow | undefined
 
   if (!row) return undefined
 
-  return mapJobRow(row, getTechnologiesByJobId(id))
+  return mapJobRow(row, getTechnologiesByJobId(id), getJobContentByJobId(id))
 }
 
 function normalizeTechnologies(technologies: string[]): string[] {
@@ -67,25 +77,15 @@ function normalizeTechnologies(technologies: string[]): string[] {
 }
 
 function updateTechnologies(jobId: string, technologies: string[]) {
-  const deleteRelations = db.prepare(`DELETE FROM job_technologies WHERE job_id = ?`)
-  const insertTechnology = db.prepare(`INSERT OR IGNORE INTO technologies (name) VALUES (?)`)
-  const getTechnology = db.prepare(`SELECT id FROM technologies WHERE name = ?`)
+  // Al ser texto plano, basta con borrar las relaciones del job y reinsertarlas.
+  db.prepare(`DELETE FROM job_technologies WHERE job_id = ?`).run(jobId)
+
   const insertRelation = db.prepare(`
-    INSERT OR IGNORE INTO job_technologies (job_id, technology_id) VALUES (?, ?)
+    INSERT INTO job_technologies (job_id, technology) VALUES (?, ?)
   `)
 
-  deleteRelations.run(jobId)
-
   for (const technology of normalizeTechnologies(technologies)) {
-    insertTechnology.run(technology)
-
-    const technologyRow = getTechnology.get(technology) as { id: number } | undefined
-
-    if (!technologyRow) {
-      throw new Error(`No se pudo encontrar la tecnología: ${technology}`)
-    }
-
-    insertRelation.run(jobId, technologyRow.id)
+    insertRelation.run(jobId, technology)
   }
 }
 
@@ -105,13 +105,13 @@ export class JobModel {
     }
 
     if (filters?.tech) {
+      // technology es texto plano: un EXISTS simple filtra.
       conditions.push(`
         EXISTS (
           SELECT 1
           FROM job_technologies
-          INNER JOIN technologies ON technologies.id = job_technologies.technology_id
           WHERE job_technologies.job_id = jobs.id
-          AND LOWER(technologies.name) = LOWER(@tech)
+          AND LOWER(technology) = LOWER(@tech)
         )
       `)
       params.tech = filters.tech
@@ -120,14 +120,13 @@ export class JobModel {
     const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
     const rows = db.prepare(`
-      SELECT id, title, company, location, description, modality, level,
-             content_description, responsibilities, requirements, about
+      SELECT id, title, company, location, description, modality, level
       FROM jobs
       ${whereClause}
       ORDER BY title ASC
     `).all(params) as JobRow[]
 
-    return rows.map((row) => mapJobRow(row, getTechnologiesByJobId(row.id)))
+    return rows.map((row) => mapJobRow(row, getTechnologiesByJobId(row.id), getJobContentByJobId(row.id)))
   }
 
   static async getById(id: string): Promise<Job | undefined> {
@@ -139,19 +138,18 @@ export class JobModel {
     const technologies = normalizeTechnologies(input.data.technology)
 
     const insertJob = db.prepare(`
-      INSERT INTO jobs (
-        id, title, company, location, description, modality, level,
-        content_description, responsibilities, requirements, about
-      ) VALUES (
-        @id, @title, @company, @location, @description, @modality, @level,
-        @contentDescription, @responsibilities, @requirements, @about
-      )
+      INSERT INTO jobs (id, title, company, location, description, modality, level)
+      VALUES (@id, @title, @company, @location, @description, @modality, @level)
     `)
 
-    const insertTechnology = db.prepare(`INSERT OR IGNORE INTO technologies (name) VALUES (?)`)
-    const getTechnology = db.prepare(`SELECT id FROM technologies WHERE name = ?`)
+    // job_content tiene id propio
+    const insertContent = db.prepare(`
+      INSERT INTO job_content (id, job_id, description, responsibilities, requirements, about)
+      VALUES (@id, @jobId, @description, @responsibilities, @requirements, @about)
+    `)
+
     const insertRelation = db.prepare(`
-      INSERT INTO job_technologies (job_id, technology_id) VALUES (?, ?)
+      INSERT INTO job_technologies (job_id, technology) VALUES (?, ?)
     `)
 
     const transaction = db.transaction(() => {
@@ -163,22 +161,19 @@ export class JobModel {
         description: newJob.description,
         modality: newJob.data.modality,
         level: newJob.data.level,
-        contentDescription: newJob.content?.description ?? '',
+      })
+
+      insertContent.run({
+        id: crypto.randomUUID(),
+        jobId: newJob.id,
+        description: newJob.content?.description ?? '',
         responsibilities: newJob.content?.responsibilities ?? '',
         requirements: newJob.content?.requirements ?? '',
         about: newJob.content?.about ?? '',
       })
 
       for (const technology of technologies) {
-        insertTechnology.run(technology)
-
-        const technologyRow = getTechnology.get(technology) as { id: number } | undefined
-
-        if (!technologyRow) {
-          throw new Error(`No se pudo encontrar la tecnología: ${technology}`)
-        }
-
-        insertRelation.run(newJob.id, technologyRow.id)
+        insertRelation.run(newJob.id, technology)
       }
     })
 
@@ -187,6 +182,7 @@ export class JobModel {
   }
 
   static async delete(id: string): Promise<boolean> {
+    // El ON DELETE CASCADE limpia también job_technologies y job_content.
     const result = db.prepare(`DELETE FROM jobs WHERE id = ?`).run(id)
     return result.changes > 0
   }
@@ -214,12 +210,17 @@ export class JobModel {
           location = @location,
           description = @description,
           modality = @modality,
-          level = @level,
-          content_description = @contentDescription,
+          level = @level
+      WHERE id = @id
+    `)
+
+    const updateContent = db.prepare(`
+      UPDATE job_content
+      SET description = @description,
           responsibilities = @responsibilities,
           requirements = @requirements,
           about = @about
-      WHERE id = @id
+      WHERE job_id = @jobId
     `)
 
     const transaction = db.transaction(() => {
@@ -231,7 +232,12 @@ export class JobModel {
         description: updatedJob.description,
         modality: updatedJob.data.modality,
         level: updatedJob.data.level,
-        contentDescription: updatedJob.content?.description ?? '',
+      })
+
+      // Cada job tiene una fila en job_content: la actualizamos, no la duplicamos.
+      updateContent.run({
+        jobId: id,
+        description: updatedJob.content?.description ?? '',
         responsibilities: updatedJob.content?.responsibilities ?? '',
         requirements: updatedJob.content?.requirements ?? '',
         about: updatedJob.content?.about ?? '',
