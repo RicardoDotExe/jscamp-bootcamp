@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -25,6 +26,7 @@ const __dirname = path.dirname(__filename)
 const jobsPath = path.join(__dirname, '..', 'jobs.json')
 const jobs: SeedJob[] = JSON.parse(fs.readFileSync(jobsPath, 'utf-8'))
 
+// IF NOT EXISTS evita recrearlas si ya existen.
 function createTables() {
     db.exec(`
     CREATE TABLE IF NOT EXISTS jobs (
@@ -34,29 +36,28 @@ function createTables() {
       location TEXT NOT NULL,
       description TEXT NOT NULL,
       modality TEXT NOT NULL CHECK (modality IN ('remote', 'onsite', 'hybrid')),
-      level TEXT NOT NULL CHECK (level IN ('junior', 'mid', 'senior')),
-      content_description TEXT NOT NULL,
-      responsibilities TEXT NOT NULL,
-      requirements TEXT NOT NULL,
-      about TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS technologies (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL UNIQUE
+      level TEXT NOT NULL CHECK (level IN ('junior', 'mid', 'senior'))
     );
 
     CREATE TABLE IF NOT EXISTS job_technologies (
       job_id TEXT NOT NULL,
-      technology_id INTEGER NOT NULL,
-      PRIMARY KEY (job_id, technology_id),
-      FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
-      FOREIGN KEY (technology_id) REFERENCES technologies(id) ON DELETE CASCADE
+      technology TEXT NOT NULL,
+      FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS job_content (
+      job_id TEXT NOT NULL,
+      description TEXT NOT NULL,
+      id TEXT PRIMARY KEY,
+      responsibilities TEXT NOT NULL,
+      requirements TEXT NOT NULL,
+      about TEXT NOT NULL,
+      FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE
     );
 
     CREATE INDEX IF NOT EXISTS idx_jobs_modality ON jobs(modality);
     CREATE INDEX IF NOT EXISTS idx_jobs_level ON jobs(level);
-    CREATE INDEX IF NOT EXISTS idx_technologies_name ON technologies(name);
+    CREATE INDEX IF NOT EXISTS idx_job_technologies_job_id ON job_technologies(job_id);
   `)
 }
 
@@ -64,28 +65,24 @@ function createTables() {
 createTables()
 
 const insertJob = db.prepare(`
-  INSERT OR IGNORE INTO jobs (
-    id, title, company, location, description, modality, level,
-    content_description, responsibilities, requirements, about
-  ) VALUES (
-    @id, @title, @company, @location, @description, @modality, @level,
-    @contentDescription, @responsibilities, @requirements, @about
-  )
+  INSERT INTO jobs (id, title, company, location, description, modality, level)
+  VALUES (@id, @title, @company, @location, @description, @modality, @level)
+`)
+
+// El content va en su propia tabla y necesita su propio id (es su PRIMARY KEY).
+const insertContent = db.prepare(`
+  INSERT INTO job_content (id, job_id, description, responsibilities, requirements, about)
+  VALUES (@id, @jobId, @description, @responsibilities, @requirements, @about)
 `)
 
 const insertTechnology = db.prepare(`
-  INSERT OR IGNORE INTO technologies (name) VALUES (?)
-`)
-
-const getTechnology = db.prepare(`
-  SELECT id FROM technologies WHERE name = ?
-`)
-
-const insertJobTechnology = db.prepare(`
-  INSERT OR IGNORE INTO job_technologies (job_id, technology_id) VALUES (?, ?)
+  INSERT INTO job_technologies (job_id, technology) VALUES (@jobId, @technology)
 `)
 
 const seed = db.transaction((jobsToInsert: SeedJob[]) => {
+    // Vaciamos para poder re-ejecutar el seed sin duplicar, el ON DELETE CASCADE borra también las tablas hijas.
+    db.prepare('DELETE FROM jobs').run()
+
     for (const job of jobsToInsert) {
         insertJob.run({
             id: job.id,
@@ -95,23 +92,19 @@ const seed = db.transaction((jobsToInsert: SeedJob[]) => {
             description: job.description,
             modality: job.modality,
             level: job.level,
-            contentDescription: job.content.description,
+        })
+
+        insertContent.run({
+            id: crypto.randomUUID(),
+            jobId: job.id,
+            description: job.content.description,
             responsibilities: job.content.responsibilities,
             requirements: job.content.requirements,
             about: job.content.about,
         })
 
         for (const technology of job.technologies) {
-            const normalizedTechnology = technology.toLowerCase().trim()
-            insertTechnology.run(normalizedTechnology)
-
-            const technologyRow = getTechnology.get(normalizedTechnology) as { id: number } | undefined
-
-            if (!technologyRow) {
-                throw new Error(`No se pudo encontrar la tecnología: ${normalizedTechnology}`)
-            }
-
-            insertJobTechnology.run(job.id, technologyRow.id)
+            insertTechnology.run({ jobId: job.id, technology: technology.toLowerCase().trim() })
         }
     }
 })
