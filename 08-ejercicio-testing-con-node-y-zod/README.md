@@ -1,392 +1,214 @@
-# Ejercicio: API REST con Express y patrón MVC
+# Ejercicio: Testing de API REST
 
 ## Objetivo
 
-¡Hola! Felicidades por llegar al último ejercicio de Node.js previo al módulo de Testing.
+¡Hola! Felicidades por llegar al módulo de Testing.
 
-En este ejercicio vas a crear una API REST completa aplicando el **patrón MVC (Modelo-Vista-Controlador)**, siguiendo las mejores prácticas.
-
-Trabajarás con los datos de jobs que te hemos dejado en `jobs.json` y con la estructura base de carpetas: `models`, `controllers` y `routes`.
+En este ejercicio vas a aplicar todo lo aprendido sobre **testing de APIs**, **validación con Zod** y **buenas prácticas de testing**. Trabajarás sobre una API REST de jobs que ya tiene implementada toda la lógica de negocio (la que hemos hecho en el módulo anterior), pero le falta lo más importante: **tests que garanticen que funciona correctamente**.
 
 ## Estructura del proyecto
 
-Tu proyecto ya tiene esta estructura:
+Tu proyecto ya tiene esta estructura implementada:
 
 ```text
-├── app.js              # Punto de entrada de la aplicación
-├── jobs.json           # Base de datos en JSON con los trabajos
+├── app.js              # Aplicación Express (ya configurada para testing)
+├── app.test.js         # Aquí escribirás tus tests
+├── config.js           # Configuración de la aplicación
+├── jobs.json           # Base de datos en JSON
 ├── models/
-│   └── jobs.js         # Lógica de acceso a datos
+│   └── job.js         # Modelo con toda la lógica de datos
 ├── controllers/
-│   └── jobs.js         # Lógica de negocio de los endpoints
+│   └── jobs.js        # Controladores con la lógica de negocio
 ├── routes/
-│   └── jobs.js         # Definición de rutas
-└── middlewares/
-    └── cors.js         # Middleware de CORS
+│   └── jobs.js        # Definición de rutas
+├── middlewares/
+│   └── cors.js        # Middleware de CORS
+└── schemas/
+    └── jobs.js        # Aquí crearás el schema de validación con Zod
 ```
 
-## Código base
+## ¿Qué está implementado?
 
-En el archivo `app.js` encontrarás este código:
+- **GET /jobs** - Listar jobs con filtros y paginación
+- **GET /jobs/:id** - Obtener un job por ID
+- **POST /jobs** - Crear un nuevo job
+- **PUT /jobs/:id** - Actualizar un job completo
+- **PATCH /jobs/:id** - Actualizar parcialmente un job
+- **DELETE /jobs/:id** - Eliminar un job
 
-```js
-import express from 'express'
-import { jobsRouter } from './routes/jobs.js'
+## Tarea 1: Schema de validación (`schemas/jobs.js`)
 
-const PORT = 3000
-const app = express()
+Crear un schema con Zod que valide la estructura de los jobs:
 
-app.use('/jobs', jobsRouter)
+- Campos requeridos: `titulo`, `empresa`, `ubicacion`
+- Campos opcionales: `descripcion`, `content`
+- Validaciones específicas:
+  - `titulo`: string, mínimo 3 caracteres, máximo 100 caracteres
+  - `data.technology`: array de strings
+  - `data.modalidad`: string opcional
+  - `data.nivel`: string opcional
 
-app.listen(PORT, () => {
-  console.log(`Servidor levantado en http://localhost:${PORT}`)
-})
-```
+Exportar dos funciones:
 
-También tienes el archivo `jobs.json` que te mencionamos anteriormente con datos de trabajos que servirá como base de datos.
+- `validateJob(input)` - Valida un job completo
+- `validatePartialJob(input)` - Valida un job parcial (para PATCH)
 
-## ¿Qué es el patrón MVC?
+Estas dos funciones debes transformarlas en un middleware dentro de `routes/jobs.js`.
 
-El MVC separa la aplicación en tres componentes:
+- `validateJob` se usará para los endpoints `POST` y `PUT`.
+- `validatePartialJob` se usará para el endpoint `PATCH`.
 
-- **Model (Modelo)**: Gestiona los datos. En este caso, lee y manipula el archivo `jobs.json`
-- **Controller (Controlador)**: Contiene la lógica de negocio. Procesa las peticiones y decide qué responder
-- **Routes (Rutas)**: Define los endpoints y los conecta con los controladores
+## Tarea 2: Tests de integración (`app.test.js`)
 
-## Tu tarea
+Escribir tests completos para todos los endpoints. Debes:
 
-Deberás implementar la lógica en los tres archivos principales siguiendo el patrón MVC usando **clases** o **funciones** (usaremos clases para explicar los ejercicios, pero también puedes usar funciones):
-
-### 1. Model (`models/job.js`)
-
-Aquí crearás una clase `JobModel` con métodos estáticos o funciones para:
-
-- `getAll({ text, title, level, limit, technology, offset })` - Obtener todos los jobs aplicando filtros
-
-- `getById(id)` - Obtener un job por ID
-
-- `create({ titulo, empresa, ubicacion, descripcion, data, content })` - Crear un nuevo job
-
-- `update(id, { titulo, empresa, ubicacion, descripcion, data, content })` - Actualizar un job
-
-- `partialUpdate(id, { titulo, empresa, ubicacion, descripcion, data, content })` - Actualizar parcialmente un job
-
-- `delete(id)` - Eliminar un job
-
-### 2. Controller (`controllers/jobs.js`)
-
-Aquí crearás una clase `JobController` con métodos estáticos que manejan las peticiones HTTP:
-
-- `getAll(req, res)` - Maneja GET `/jobs`
-- `getId(req, res)` - Maneja GET `/jobs/:id`
-- `create(req, res)` - Maneja POST `/jobs`
-- `update(req, res)` - Maneja PUT `/jobs/:id`
-- `partialUpdate(req, res)` - Maneja PATCH `/jobs/:id`
-- `delete(req, res)` - Maneja DELETE `/jobs/:id`
-
-### 3. Routes (`routes/jobs.js`)
-
-Aquí conectarás las rutas con los controladores.
-
-### 4. Config (`config.js`)
-
-Crea un archivo de configuración con constantes por defecto:
-
-```js
-export const DEFAULTS = {
-  LIMIT_PAGINATION: 10,
-  LIMIT_OFFSET: 0,
-  PORT: 1234,
-}
-```
-
-Esto servirá para que puedas usar los valores por defecto en los controladores y en el punto de entrada de la aplicación.
-
-Siempre es bueno tener un archivo de configuración que pueda modificar el comportamiento de la aplicación sin necesidad de modificar el código.
+- Usar `node:test` (sin dependencias externas)
+- Usar `node:assert` para las aserciones
+- Levantar el servidor antes de los tests con `before()`
+- Cerrar el servidor después de los tests con `after()`
+- Usar un puerto diferente al de desarrollo (ej: 5678)
 
 ---
 
-## Primer ejercicio: GET - Listar todos los jobs con filtros
+### Tests para GET /jobs
 
-Implementa un endpoint que devuelva todos los trabajos con soporte para filtros y paginación.
+Escribe tests que verifiquen el funcionamiento del endpoint de listado de jobs.
 
-### Requisitos
+#### Tests requeridos
 
-- **Método:** GET
-- **Ruta:** `/jobs`
-- **Query params opcionales:**
-  - `title` - Filtra por título (case insensitive)
-  - `text` - Busca en título y descripción (case insensitive)
-  - `technology` - Filtra por tecnología específica
-  - `limit` - Cantidad de resultados (default: 10)
-  - `offset` - Desde qué posición empezar (default: 0)
-- **Respuesta:** Objeto con `data`, `total`, `limit` y `offset`
-- **Status code:** 200
+1. **Debe responder con 200 y un array de trabajos**
+   - Verificar status code 200
+   - Verificar que `json.data` es un array
 
-### Ejemplo de respuesta
+2. **Debe filtrar trabajos por tecnología**
+   - Hacer petición con `?technology=react`
+   - Verificar que todos los jobs devueltos incluyen esa tecnología en `data.technology`
 
-```json
-{
-  "data": [
-    {
-      "id": "7a4d1d8b-1e45-4d8c-9f1a-8c2f9a9121a4",
-      "titulo": "Desarrollador de Software Senior",
-      "empresa": "Tech Solutions Inc.",
-      "ubicacion": "Remoto",
-      "descripcion": "Buscamos un ingeniero de software con experiencia en desarrollo web...",
-      "data": {
-        "technology": ["react", "node", "javascript"],
-        "modalidad": "remoto",
-        "nivel": "senior"
-      },
-      "content": {
-        "description": "Tech Solutions Inc. está buscando un Ingeniero de Software Senior...",
-        "responsibilities": "- Diseñar, desarrollar y mantener aplicaciones web...",
-        "requirements": "- Licenciatura en Informática o campo relacionado...",
-        "about": "Tech Solutions Inc. es una empresa de tecnología innovadora..."
-      }
-    }
-  ],
-  "total": 1,
-  "limit": 10,
-  "offset": 0
-}
-```
+3. **Debe respetar el límite de resultados**
+   - Hacer petición con `?limit=2`
+   - Verificar que `json.limit === 2`
+   - Verificar que `json.data.length === 2`
 
-### Ejemplos de uso
+4. **Debe aplicar offset correctamente**
+   - Hacer petición con `?offset=1`
+   - Verificar que el primer resultado es el segundo job del JSON
+   - Puedes usar el ID `d35b2c89-5d60-4f26-b19a-6cfb2f1a0f57` para verificar
 
-```bash
-# Todos los jobs (primeros 10)
-GET /jobs
+### Tests para POST /jobs
 
-# Buscar por texto
-GET /jobs?text=frontend
+Escribe tests para verificar la creación de jobs y la validación con Zod.
 
-# Filtrar por tecnología
-GET /jobs?technology=react
+#### Tests requeridos
 
-# Paginación
-GET /jobs?limit=5&offset=10
+1. **El nuevo trabajo se añade correctamente con buen formato**
+   - Crear un job válido
+   - Verificar status code 201
+   - Verificar que el job devuelto tiene un `id` generado
+   - Verificar que los datos coinciden con lo enviado
 
-# Combinar filtros
-GET /jobs?text=developer&technology=node&limit=20
-```
+2. **La petición es validada correctamente**
+   - Probar con `titulo` de menos de 3 caracteres → debe devolver 400
+   - Probar con `titulo` de más de 100 caracteres → debe devolver 400
+   - Probar sin campo `titulo` → debe devolver 400
+   - Probar con `titulo` que no sea string → debe devolver 400
+   - Probar sin campo `descripcion` (es opcional) → debe devolver 201
 
----
+### Tests para GET /jobs/:id
 
-## Segundo ejercicio: GET - Obtener un job por ID
+Escribe tests para verificar la obtención de un job específico.
 
-Crea un endpoint para obtener un trabajo específico por su ID.
+#### Tests requeridos
 
-### Requisitos
+1. **Debe devolver el trabajo con ID especificado**
+   - Usar un ID válido del JSON (ej: `d35b2c89-5d60-4f26-b19a-6cfb2f1a0f57`)
+   - Verificar status code 200
+   - Verificar que el `id` del job devuelto coincide
 
-- **Método:** GET
-- **Ruta:** `/jobs/:id`
-- **Respuesta:** El job encontrado o un error 404
-- **Status code:** 200 si existe, 404 si no existe
+2. **Debe enviar 404 cuando el ID no existe**
+   - Usar un ID inválido
+   - Verificar status code 404
+   - Verificar que la respuesta contiene un campo `error`
 
-### Ejemplo de respuesta exitosa
+### Tests para PUT /jobs/:id
 
-```json
-{
-  "id": "7a4d1d8b-1e45-4d8c-9f1a-8c2f9a9121a4",
-  "titulo": "Desarrollador de Software Senior",
-  "empresa": "Tech Solutions Inc.",
-  "ubicacion": "Remoto",
-  "descripcion": "Buscamos un ingeniero de software con experiencia en desarrollo web y conocimientos en JavaScript, React y Node.js...",
-  "data": {
-    "technology": ["react", "node", "javascript"],
-    "modalidad": "remoto",
-    "nivel": "senior"
-  },
-  "content": {
-    "description": "Tech Solutions Inc. está buscando un Ingeniero de Software Senior...",
-    "responsibilities": "- Diseñar, desarrollar y mantener aplicaciones web...",
-    "requirements": "- Licenciatura en Informática o campo relacionado...",
-    "about": "Tech Solutions Inc. es una empresa de tecnología innovadora..."
-  }
-}
-```
+Escribe tests para verificar la actualización completa de un job.
 
-### Ejemplo de respuesta de error
+#### Tests requeridos
 
-```json
-{
-  "error": "Job not found"
-}
-```
+1. **Debe recibir 204 y actualizar el trabajo**
+   - Usar un ID válido
+   - Enviar un job completo con datos nuevos
+   - Verificar status code 204
+   - Hacer un GET del mismo job y verificar que se actualizó
 
----
+2. **Debe devolver 404 cuando el ID no existe**
+   - Usar un ID inválido
+   - Verificar status code 404
 
-## Tercer ejercicio: POST - Crear un nuevo job
+**Importante:** PUT reemplaza **todos** los campos del recurso.
 
-Implementa un endpoint para crear un nuevo trabajo.
+### Tests para PATCH /jobs/:id
 
-### Requisitos
+Escribe tests para verificar la actualización parcial de un job.
 
-- **Método:** POST
-- **Ruta:** `/jobs`
-- **Body esperado:** Objeto JSON con `titulo`, `empresa`, `ubicacion`, `descripcion`, `data` y `content`
-- **Respuesta:** El job creado con su ID generado
-- **Status code:** 201
+#### Tests requeridos
 
-### Ejemplo de petición
+1. **Debe recibir 204 y actualizar solo los campos enviados**
+   - Usar un ID válido (ej: `f62d8a34-923a-4ac2-9b0b-14e0ac2f5405`)
+   - Enviar solo algunos campos (ej: `titulo` y `ubicacion`)
+   - Verificar status code 204
+   - Hacer un GET y verificar que solo esos campos cambiaron
 
-```json
-{
-  "titulo": "Ingeniero DevOps",
-  "empresa": "CloudTech",
-  "ubicacion": "Remoto",
-  "descripcion": "Buscamos un ingeniero DevOps con experiencia en contenedores y orquestación.",
-  "data": {
-    "technology": ["docker", "kubernetes", "aws"],
-    "modalidad": "remoto",
-    "nivel": "senior"
-  },
-  "content": {
-    "description": "CloudTech está buscando un Ingeniero DevOps...",
-    "responsibilities": "- Gestionar infraestructura cloud...",
-    "requirements": "- Experiencia con Docker y Kubernetes...",
-    "about": "CloudTech es una empresa líder en soluciones cloud..."
-  }
-}
-```
+2. **Debe devolver 404 cuando el ID no existe**
+   - Usar un ID inválido
+   - Verificar status code 404
 
-### Ejemplo de respuesta
+**Importante:** PATCH solo actualiza los campos enviados, mantiene el resto sin cambios.
 
-```json
-{
-  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "titulo": "Ingeniero DevOps",
-  "empresa": "CloudTech",
-  "ubicacion": "Remoto",
-  "descripcion": "Buscamos un ingeniero DevOps con experiencia en contenedores y orquestación.",
-  "data": {
-    "technology": ["docker", "kubernetes", "aws"],
-    "modalidad": "remoto",
-    "nivel": "senior"
-  },
-  "content": {
-    "description": "CloudTech está buscando un Ingeniero DevOps...",
-    "responsibilities": "- Gestionar infraestructura cloud...",
-    "requirements": "- Experiencia con Docker y Kubernetes...",
-    "about": "CloudTech es una empresa líder en soluciones cloud..."
-  }
-}
-```
+### Tests para DELETE /jobs/:id
+
+Escribe tests para verificar la eliminación de un job.
+
+#### Tests requeridos
+
+1. **Debe recibir 204 y eliminar el trabajo**
+   - Usar un ID válido (ej: `f62d8a34-923a-4ac2-9b0b-14e0ac2f5405`)
+   - Verificar status code 204
+   - Hacer un GET del mismo job y verificar que devuelve 404
+
+2. **Debe devolver 404 cuando el ID no existe**
+   - Usar un ID inválido
+   - Verificar status code 404
 
 ---
 
-## Cuarto ejercicio: PUT, PATCH y DELETE
+## Consejos importantes
 
-### PUT - Actualizar un job completo
+1. **Usa describe() para agrupar tests**
+   - Agrupa los tests por endpoint
+   - Facilita la lectura
 
-- **Método:** PUT
-- **Ruta:** `/jobs/:id`
-- **Descripción:** Reemplaza completamente un job existente
+2. **Nombres descriptivos**
+   - Los nombres de los tests deben explicar qué verifican
 
-### PATCH - Actualizar parcialmente un job
+3. **assert.strictEqual vs assert.ok**
+   - `strictEqual`: compara valores con `===`
+   - `ok`: verifica que el valor sea truthy
 
-- **Método:** PATCH
-- **Ruta:** `/jobs/:id`
-- **Descripción:** Actualiza solo algunos campos de un job
+4. **Orden de los tests**
+   - Los tests deben ser independientes
+   - No deben depender del orden de ejecución
+   - Cada test debe poder ejecutarse solo
 
-### DELETE - Eliminar un job
-
-- **Método:** DELETE
-- **Ruta:** `/jobs/:id`
-- **Descripción:** Elimina un job del array
-
----
-
-## Quinto ejercicio: Middleware de CORS
-
-Implementa un middleware para manejar CORS usando el paquete `cors` de npm.
-
-### Requisitos
-
-- Crear un middleware en `middlewares/cors.js`
-- Usar el paquete `cors` de npm
-- Configurar orígenes aceptados
-- Aplicar el middleware en `app.js`
-
-Las orígenes aceptados son:
-
-- `http://localhost:3000`
-- `http://localhost:1234`
-- `https://midu.dev`
-- `http://jscamp.dev`
-- `http://localhost:5173`
-
----
-
-## Probando tu API
-
-Puedes probar tu API usando diferentes herramientas:
-
-### Con curl
-
-```bash
-# GET - Listar todos los jobs (primeros 10)
-curl http://localhost:1234/jobs
-
-# GET - Listar con filtros
-curl "http://localhost:1234/jobs?text=frontend&limit=5"
-
-# GET - Filtrar por tecnología
-curl "http://localhost:1234/jobs?technology=react"
-
-# GET - Con paginación
-curl "http://localhost:1234/jobs?limit=20&offset=10"
-
-# GET - Obtener job por ID
-curl http://localhost:1234/jobs/1
-
-# POST - Crear job
-curl -X POST http://localhost:1234/jobs \
-  -H "Content-Type: application/json" \
-  -d '{"titulo":"Full Stack Developer","empresa":"TechStart","ubicacion":"Valencia","data":{"descripcion":"Desarrollador full stack","tecnologias":["react","node"]}}'
-```
-
-### Con herramientas gráficas
-
-- **Bruno**: https://www.usebruno.com/
-
----
-
-## Estructura final del proyecto
-
-Al completar el ejercicio, tu proyecto debería tener esta estructura:
-
-```text
-├── app.js                    # Servidor Express configurado
-├── config.js                 # Constantes y configuración
-├── jobs.json                 # Base de datos en JSON
-├── models/
-│   └── job.js               # Clase JobModel con métodos estáticos
-├── controllers/
-│   └── jobs.js              # Clase JobController con métodos estáticos
-├── routes/
-│   └── jobs.js              # Router con todas las rutas
-└── middlewares/
-    └── cors.js              # Middleware de CORS configurado
-```
-
-## Ventajas del patrón MVC
-
-Al completar este ejercicio habrás visto las ventajas de usar MVC:
-
-- **Mantenibilidad**: Cada archivo tiene una responsabilidad clara
-- **Escalabilidad**: Puedes añadir nuevos recursos fácilmente
-- **Testabilidad**: Puedes probar cada capa de forma independiente
-- **Reutilización**: La lógica del modelo puede usarse en diferentes controladores
+5. **IDs de prueba**
+   - Usa IDs que existen en el `jobs.json`
 
 ## ¿Dudas?
 
 Recuerda que puedes:
 
-- Revisar las clases del módulo sobre Backend con Node.js y Express
+- Revisar las clases del módulo sobre Testing
 - Consultar en Discord
-- Poner tus dudas en `dudas.md`
+- Documentar tus dudas en `dudas.md`
 
-¡Mucho éxito con el ejercicio, y como siempre... A mover las manitas!
+¡Mucho éxito con el ejercicio, y como siempre... A mover las manitas y seguir aprendiendo!

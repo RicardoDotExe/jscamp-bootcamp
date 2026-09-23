@@ -1,5 +1,5 @@
-import { JobModel } from '../models/jobsModel.js'
 import { DEFAULTS } from '../config.js'
+import { JobModel } from '../models/jobsModel.js'
 
 export class JobController {
   // GET /jobs
@@ -79,7 +79,9 @@ export class JobController {
         })
       }
 
-      return res.json(updatedJob)
+      /* return res.json(updatedJob) */
+      // Devolvemos un 204 sin cuerpo, el cambio se verifica con un GET posterior
+      return res.status(204).send()
     } catch (error) {
       console.error('Error updating job:', error)
       return res.status(500).json({
@@ -101,7 +103,9 @@ export class JobController {
         })
       }
 
-      return res.json(updatedJob)
+      /* return res.json(updatedJob) */
+     // Lo mismo
+      return res.status(204).send()
     } catch (error) {
       console.error('Error patching job:', error)
       return res.status(500).json({
@@ -122,10 +126,12 @@ export class JobController {
         })
       }
 
-      return res.json({
+      /* return res.json({
         message: 'Job deleted successfully',
         data: deletedJob
-      })
+      }) */
+      // Lo mismo
+      return res.sendStatus(204)
     } catch (error) {
       console.error('Error deleting job:', error)
       return res.status(500).json({
